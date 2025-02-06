@@ -1,0 +1,23 @@
+{
+  "name": "tlv",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "style": "npx @tailwindcss/cli -i ./src/public/css/main.css -o ./src/public/css/output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.0.3",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
+    "nodemon": "^3.1.9",
+    "tailwindcss": "^4.0.3"
+  }
+}
