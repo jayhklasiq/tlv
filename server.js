@@ -2,6 +2,7 @@ const express = require('express');
 const expressLayouts = require("express-ejs-layouts");
 const path = require('path');
 const router = express.Router();
+const connectDB = require('./src/config/database');
 
 require('dotenv').config();
 
@@ -32,6 +33,9 @@ app.use('/about', aboutRoutes);
 app.use('/contact', contactRoutes);
 app.use('/program', moduleRoutes);
 app.use('/register', registerRoutes);
+
+// Connect to MongoDB
+connectDB();
 
 // Error handling
 app.use((err, req, res, next) => {

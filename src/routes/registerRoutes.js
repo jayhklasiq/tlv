@@ -5,7 +5,8 @@ const RegisterController = require('../controllers/RegisterController');
 router.get('/', (req, res) => {
   res.render('pages/register', {
     title: 'Register for Module 1',
-    pageTitle: 'Register'
+    pageTitle: 'Register',
+    errors: []
   });
 });
 
