@@ -3,6 +3,7 @@ const expressLayouts = require("express-ejs-layouts");
 const path = require('path');
 const router = express.Router();
 const connectDB = require('./src/config/database');
+// const stripePayment = require('./src/config/payment');
 
 require('dotenv').config();
 
@@ -27,12 +28,25 @@ const aboutRoutes = require('./src/routes/aboutRoutes');
 const contactRoutes = require('./src/routes/contactRoutes');
 const moduleRoutes = require('./src/routes/moduleRoutes');
 const registerRoutes = require('./src/routes/registerRoutes');
+const profileRoutes = require('./src/routes/profileRoutes');
 
 app.use('/', homeRoutes);
 app.use('/about', aboutRoutes);
 app.use('/contact', contactRoutes);
 app.use('/program', moduleRoutes);
 app.use('/register', registerRoutes);
+app.use('/profile', profileRoutes);
+
+
+// app.post('/create-checkout-session', async (req, res) => {
+//   try {
+//     const session = await stripePayment.createCheckoutSession();
+//     res.redirect(303, session.url);
+//   } catch (error) {
+//     console.error('Checkout error:', error);
+//     res.redirect('/register?error=payment');
+//   }
+// });
 
 // Connect to MongoDB
 connectDB();

@@ -1,5 +1,18 @@
-<h1 class="font-pf">FILL THIS FORM TO REGISTER FOR MODULE 1</h1>
-<% if (errors && errors.length> 0) { %> <div class="mb-4">
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+    <strong class="font-bold">Success!</strong>
+    <span class="block sm:inline">Your registration has been completed successfully.</span>
+    <div class="mt-4">
+      <p class="mb-4">Please proceed to payment to secure your spot in the masterclass:</p>
+      <a href="<%= paymentLink %>" 
+         class="px-8 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">
+         Proceed to Payment
+      </a>
+    </div>
+  </div>
+<% } else { %>
+  <h1 class="font-pf">FILL THIS FORM TO REGISTER FOR MODULE 1</h1>
+  <% if (errors && errors.length> 0) { %> <div class="mb-4">
     <ul class="text-red-500">
       <% errors.forEach(function(error) { %>
         <li>
@@ -44,3 +57,4 @@
       </div>
       <button type="submit" class="px-8 py-2 bg-blue-500 text-white rounded">REGISTER</button>
     </form>
+<% } %>
