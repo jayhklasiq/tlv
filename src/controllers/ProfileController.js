@@ -74,14 +74,14 @@ class ProfileController {
       const user = await User.findOne({ email });
       await VerificationCode.deleteOne({ email, code });
 
-      res.redirect('/profile');
+      // res.redirect('/profile');
 
-      // res.render('pages/profile', {
-      //   title: 'My Profile',
-      //   pageTitle: 'My Profile',
-      //   user,
-      //   errors: []
-      // });
+      res.render('pages/profile', {
+        title: 'My Profile',
+        pageTitle: 'My Profile',
+        user,
+        errors: []
+      });
     } catch (error) {
       console.error('Code verification error:', error);
       res.render('pages/profile-code', {
