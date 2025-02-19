@@ -37,6 +37,11 @@ const userSchema = new mongoose.Schema({
   registeredAt: {
     type: Date,
     default: Date.now
+  },
+  moduleNumber: {
+    type: Number,
+    required: true,
+    enum: [1, 2, 3]
   }
 }, { collection: 'user' });
 

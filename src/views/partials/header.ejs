@@ -7,7 +7,48 @@
     <ul class="flex flex-row justify-around gap-[20px] text-[10px] pt-2">
       <li><a href="/">HOME</a></li>
       <li><a href="/about">ABOUT</a></li>
-      <li>PROGRAM</li>
+      <li class="relative">
+        <button onclick="toggleDropdown()" class="flex items-center text-white hover:text-gray-300 transition-colors duration-200">
+          PROGRAM
+          <svg class="w-4 h-4 ml-1 transform transition-transform duration-200" id="dropdownArrow" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div id="programDropdown"
+          class="absolute hidden w-64 bg-[#060147] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
+          <a href="/program/module1"
+            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
+            Module 1: The Leadership Voice Masterclass
+          </a>
+          <a href="/program/module2"
+            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
+            Module 2: Advanced Leadership Communication
+          </a>
+          <a href="/program/module3"
+            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
+            Module 3: Executive Presence & Influence
+          </a>
+        </div>
+        <script>
+          function toggleDropdown() {
+            const dropdown = document.getElementById('programDropdown');
+            const arrow = document.getElementById('dropdownArrow');
+            dropdown.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+          }
+
+          // Close dropdown when clicking outside
+          document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('programDropdown');
+            const button = event.target.closest('button');
+            if (!button && !dropdown.classList.contains('hidden')) {
+              dropdown.classList.add('hidden');
+              document.getElementById('dropdownArrow').classList.remove('rotate-180');
+            }
+          });
+        </script>
+      </li>
       <li><a href="/contact">CONTACT</a></li>
     </ul>
   </nav>

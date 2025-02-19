@@ -2,11 +2,16 @@ const User = require('../models/User');
 
 class RegisterController {
   static async submit(req, res) {
-    const { firstName, lastName, email, phone, company, role, address, country } = req.body;
+    const { firstName, lastName, email, phone, company, role, address, country, moduleNumber } = req.body;
     const errors = [];
     const STRIPE_PAYMENT_LINK = process.env.STRIPE_PAYMENT_LINK;
-
+    const moduleTemplate = '';
     try {
+      // Add module validation
+      if (!moduleNumber || ![1, 2, 3].includes(Number(moduleNumber))) {
+        errors.push('Please select a valid module.');
+      }
+
       // Validation
       const phoneRegex = /^\+\d{1,3}\d{1,14}$/;
 
@@ -36,6 +41,7 @@ class RegisterController {
         role,
         address,
         country,
+        moduleNumber: Number(moduleNumber),
         registeredAt: new Date()
       });
 
@@ -43,16 +49,14 @@ class RegisterController {
       const savedUser = await user.save();
 
       if (savedUser) {
-        // Redirect to Stripe payment link
-        return res.render('pages/register', {
-          title: 'Registration Successful',
-          pageTitle: 'Success',
-          success: true,
-          errors: [],
-          paymentLink: STRIPE_PAYMENT_LINK
+        return res.render('pages/registration-success', {
+          title: `Module ${moduleNumber} Registration Successful`,
+          pageTitle: 'Registration Successful',
+          user: savedUser,
+          moduleNumber: Number(moduleNumber),
+          paymentLink: STRIPE_PAYMENT_LINK,
+          moduleTemplate: `module${moduleNumber}`
         });
-        // Redirect to checkout instead of showing payment link
-        // return res.redirect('/create-checkout-session');
       }
 
     } catch (error) {
@@ -61,7 +65,7 @@ class RegisterController {
       if (error.code === 11000) {
         errors.push('This email address is already registered.');
       } else {
-        errors.push('An error occurred during registration. Please try again.');   
+        errors.push('An error occurred during registration. Please try again.');
       }
 
       res.render('pages/register', {

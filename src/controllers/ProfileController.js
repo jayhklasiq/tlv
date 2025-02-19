@@ -5,11 +5,18 @@ const { sendVerificationCode } = require('../services/emailService');
 class ProfileController {
   static async index(req, res) {
     try {
-      // In a real application, you'd get the user ID from the session
-      // For now, we'll just render the profile page
+      // Get the user email from the session or query params
+      const { email } = req.query;
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.redirect('/profile/verify');
+      }
+
       res.render('pages/profile', {
-        title: 'My Profile',
-        pageTitle: 'My Profile',
+        title: 'Course Access',
+        pageTitle: 'Course Access',
+        user,
         errors: []
       });
     } catch (error) {

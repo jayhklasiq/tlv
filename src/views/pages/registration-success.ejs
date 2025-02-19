@@ -1,0 +1,25 @@
+<div class="max-w-4xl mx-auto p-8 flex flex-col gap-8">
+  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+    <strong class="font-bold">Registration Successful!</strong>
+    <span class="block sm:inline">
+      You've registered for 
+      <% if (moduleNumber === 1) { %>
+        Module 1: The Leadership Voice Masterclass
+      <% } else if (moduleNumber === 2) { %>
+        Module 2: Advanced Leadership Communication
+      <% } else if (moduleNumber === 3) { %>
+        Module 3: Executive Presence & Influence
+      <% } %>
+    </span>
+  </div>
+
+  <%- include(`${moduleTemplate}`) %>
+
+  <div class="bg-white p-4 rounded-lg shadow-lg">
+    <p class="text-black mb-4">Complete your registration by proceeding to payment:</p>
+    <a href="<%= paymentLink %>" 
+       class="px-8 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 inline-block">
+       Proceed to Payment
+    </a>
+  </div>
+</div>
