@@ -3,13 +3,37 @@ const expressLayouts = require("express-ejs-layouts");
 const path = require('path');
 const router = express.Router();
 const connectDB = require('./src/config/database');
-// const stripePayment = require('./src/config/payment');
+const stripePayment = require('./src/config/payment');
+const { webhookHandler } = require('./src/config/payment');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 require('dotenv').config();
 
-
 // Create an Express application
 const app = express();
+
+// Stripe webhook endpoint - this should be before any body parser middleware
+// Update the webhook endpoint
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+
+  try {
+    const event = stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+
+    // Add logging to debug webhook events
+    console.log('Webhook event received:', event.type);
+
+    await webhookHandler(event);
+    res.json({ received: true });
+  } catch (err) {
+    console.error(`Webhook Error: ${err.message}`);
+    res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+});
 
 // Middleware
 app.use(express.json());
