@@ -1331,8 +1331,3 @@
   syntax: "*";
   inherits: false;
 }
-
-
-.countdown-timer{
-  pointer-events: none;
-}
