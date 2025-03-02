@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const VerificationCode = require('../models/VerificationCode');
+const CountryRegistration = require('../models/CountryRegistration');
 const { sendVerificationCode } = require('../services/emailService');
 
 class ProfileController {
@@ -112,7 +113,122 @@ class ProfileController {
     }
   }
 
-  // Add logout method
+  static async update(req, res) {
+    try {
+      const { firstName, lastName, email, country } = req.body;
+      const userId = req.session.user.id;
+
+      // Get the user's current data
+      const currentUser = await User.findById(userId);
+      if (!currentUser) {
+        req.session.destroy();
+        return res.redirect('/profile/verify');
+      }
+
+      // Check if any fields actually changed
+      const hasChanges = 
+        currentUser.firstName !== firstName ||
+        currentUser.lastName !== lastName ||
+        currentUser.email !== email ||
+        currentUser.country !== country;
+
+      if (!hasChanges) {
+        return res.render('pages/profile', {
+          title: 'Profile',
+          pageTitle: 'Profile',
+          user: currentUser,
+          errors: []
+        });
+      }
+      
+      // Update user profile
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { firstName, lastName, email, country },
+        { new: true }
+      );
+
+      // If country changed, update participant counts
+      if (currentUser.country !== country) {
+        // Decrease count for old country
+        await CountryRegistration.findOneAndUpdate(
+          {
+            country: currentUser.country,
+            moduleNumber: currentUser.moduleNumber,
+            programType: currentUser.programType
+          },
+          { $inc: { currentParticipants: -1 } }
+        );
+
+        // Increase count for new country
+        await CountryRegistration.findOneAndUpdate(
+          {
+            country: country,
+            moduleNumber: currentUser.moduleNumber,
+            programType: currentUser.programType
+          },
+          { $inc: { currentParticipants: 1 } },
+          { upsert: true }
+        );
+      }
+
+      // Update session with new user data
+      req.session.user = {
+        id: updatedUser._id,
+        email: updatedUser.email
+      };
+
+      return res.render('pages/profile', {
+        title: 'Profile',
+        pageTitle: 'Profile',
+        user: updatedUser,
+        success: 'Profile updated successfully!',
+        errors: []
+      });
+    } catch (error) {
+      console.error('Profile update error:', error);
+      res.render('pages/profile', {
+        title: 'Profile',
+        pageTitle: 'Profile',
+        user: req.session.user,
+        errors: ['Failed to update profile. Please try again.']
+      });
+    }
+  }
+
+  static async deleteProfile(req, res) {
+    try {
+      const userId = req.session.user._id;
+      const user = await User.findById(userId);
+
+      // Decrease participant count for the user's country
+      await CountryRegistration.findOneAndUpdate(
+        {
+          country: user.country,
+          moduleNumber: user.moduleNumber,
+          programType: user.programType
+        },
+        { $inc: { currentParticipants: -1 } }
+      );
+
+      // Delete the user
+      await User.findByIdAndDelete(userId);
+      
+      // Clear session
+      req.session.destroy();
+      
+      res.redirect('/');
+    } catch (error) {
+      console.error('Profile deletion error:', error);
+      res.render('pages/profile', {
+        title: 'Profile',
+        pageTitle: 'Profile',
+        user: req.session.user,
+        errors: ['Failed to delete profile. Please try again.']
+      });
+    }
+  }
+
   static async logout(req, res) {
     req.session.destroy((err) => {
       if (err) {

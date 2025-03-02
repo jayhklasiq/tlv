@@ -1,48 +1,99 @@
-<header class="flex justify-between bg-[#060147] font-(--pf) mb-10">
+<header class="flex justify-between items-center bg-[#060147] font-(--pf) mb-10 px-4 py-2">
   <a href="/" class="text-[12px] font-pf">
     <h1>The Leadership Voice</h1>
     <h1>Masterclass Series</h1>
   </a>
-  <nav>
-    <ul class="flex flex-row justify-around gap-[20px] text-[10px] pt-2">
-      <li><a href="/">HOME</a></li>
-      <li><a href="/about">ABOUT</a></li>
+
+  <!-- Hamburger Menu Button (visible on mobile) -->
+  <button id="menuButton" class="md:hidden text-white focus:outline-none">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path id="menuIcon" class="block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      <path id="closeIcon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <!-- Navigation Menu -->
+  <nav id="navMenu" class="hidden md:block fixed md:relative top-[60px] md:top-0 left-0 right-0 bg-[#060147] md:bg-transparent z-50">
+    <% if (!locals.user) { %>
+    <ul class="flex flex-col md:flex-row justify-around gap-[20px] text-[10px] p-4 md:p-0 md:pt-2">
+      <li><a href="/" class="block py-2 md:py-0 hover:text-gray-300">HOME</a></li>
+      <li><a href="/about" class="block py-2 md:py-0 hover:text-gray-300">ABOUT</a></li>
       <li class="relative">
-        <button onclick="toggleDropdown()" class="flex items-center text-white hover:text-gray-300 transition-colors duration-200"> PROGRAM <svg class="w-4 h-4 ml-1 transform transition-transform duration-200" id="dropdownArrow" fill="none"
+        <button onclick="toggleDropdown(event)" class="w-full text-left py-2 md:py-0 flex items-center text-white hover:text-gray-300 transition-colors duration-200">
+          PROGRAM 
+          <svg class="w-4 h-4 ml-1 transform transition-transform duration-200" id="dropdownArrow" fill="none"
             stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
           </svg>
         </button>
         <div id="programDropdown"
-          class="absolute hidden w-64 bg-[#060147] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
+          class="hidden md:absolute w-full md:w-64 bg-[#060147] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
           <a href="/program/module1"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> Module 1: The Leadership Voice Masterclass </a>
+            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
+            Module 1: The Leadership Voice Masterclass
+          </a>
           <a href="/program/module2"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> Module 2: Advanced Leadership Communication </a>
+            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
+            Module 2: Advanced Leadership Communication
+          </a>
           <a href="/program/module3"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> Module 3: Executive Presence & Influence </a>
+            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
+            Module 3: Executive Presence & Influence
+          </a>
         </div>
-        <script>
-          function toggleDropdown() {
-            const dropdown = document.getElementById('programDropdown');
-            const arrow = document.getElementById('dropdownArrow');
-            dropdown.classList.toggle('hidden');
-            arrow.classList.toggle('rotate-180');
-          }
-
-          // Close dropdown when clicking outside
-          document.addEventListener('click', function (event) {
-            const dropdown = document.getElementById('programDropdown');
-            const button = event.target.closest('button');
-            if (!button && !dropdown.classList.contains('hidden')) {
-              dropdown.classList.add('hidden');
-              document.getElementById('dropdownArrow').classList.remove('rotate-180');
-            }
-          });
-        </script>
       </li>
-      <li><a href="/contact">CONTACT</a></li>
-      <li><a href="/profile">PROFILE</a></li>
+      <li><a href="/contact" class="block py-2 md:py-0 hover:text-gray-300">CONTACT</a></li>
+      <li><a href="/profile" class="block py-2 md:py-0 hover:text-gray-300">SIGN IN</a></li>
     </ul>
+    <% } else { %>
+    <ul class="flex flex-col md:flex-row justify-around gap-[20px] text-[10px] p-4 md:p-0 md:pt-2">
+      <li><a href="/profile" class="block py-2 md:py-0 hover:text-gray-300">MY PROFILE</a></li>
+      <li><a href="/profile/logout" class="block py-2 md:py-0 hover:text-gray-300">SIGN OUT</a></li>
+    </ul>
+    <% } %>
   </nav>
 </header>
+
+<script>
+  // Hamburger menu toggle
+  const menuButton = document.getElementById('menuButton');
+  const navMenu = document.getElementById('navMenu');
+  const menuIcon = document.getElementById('menuIcon');
+  const closeIcon = document.getElementById('closeIcon');
+  
+  menuButton.addEventListener('click', () => {
+    navMenu.classList.toggle('hidden');
+    menuIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+  });
+
+  // Program dropdown toggle
+  function toggleDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('programDropdown');
+    const arrow = document.getElementById('dropdownArrow');
+    dropdown.classList.toggle('hidden');
+    arrow.classList.toggle('rotate-180');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('programDropdown');
+    const button = event.target.closest('button');
+    if (!button && !dropdown.classList.contains('hidden')) {
+      dropdown.classList.add('hidden');
+      document.getElementById('dropdownArrow').classList.remove('rotate-180');
+    }
+  });
+
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    if (window.innerWidth >= 768) { // md breakpoint
+      navMenu.classList.remove('hidden');
+      menuIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    } else {
+      navMenu.classList.add('hidden');
+    }
+  });
+</script>
