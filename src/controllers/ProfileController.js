@@ -5,12 +5,16 @@ const { sendVerificationCode } = require('../services/emailService');
 class ProfileController {
   static async index(req, res) {
     try {
-      // Get the user email from the session or query params
-      const { email } = req.query;
-      const user = await User.findOne({ email });
-
-      if (!user) {
+      // Check if session exists and has user data
+      if (!req.session || !req.session.user) {
         return res.redirect('/profile/verify');
+      }
+
+      const user = await User.findOne({ email: req.session.user.email });
+      if (!user) {
+        // Clear invalid session
+        req.session.destroy();
+        return res.redirect('/profile');
       }
 
       res.render('pages/profile', {
@@ -66,14 +70,14 @@ class ProfileController {
   }
 
   static async verifyCode(req, res) {
-    const { email, code } = req.body;
+    const { email, code, rememberMe } = req.body;
     try {
       const verification = await VerificationCode.findOne({ email, code });
       if (!verification) {
         return res.render('pages/profile-code', {
           title: 'Enter Verification Code',
           pageTitle: 'Enter Code',
-          email,  
+          email,
           errors: ['Invalid or expired code']
         });
       }
@@ -81,7 +85,15 @@ class ProfileController {
       const user = await User.findOne({ email });
       await VerificationCode.deleteOne({ email, code });
 
-      // res.redirect('/profile');
+      // Set session duration based on remember me choice
+      const sessionDuration = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 48 * 60 * 60 * 1000;
+      req.session.cookie.maxAge = sessionDuration;
+
+      // Store user info in session
+      req.session.user = {
+        email: user.email,
+        id: user._id
+      };
 
       res.render('pages/profile', {
         title: 'My Profile',
@@ -99,6 +111,16 @@ class ProfileController {
       });
     }
   }
+
+  // Add logout method
+  static async logout(req, res) {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Logout error:', err);
+      }
+      res.redirect('/');
+    });
+  }
 }
 
-module.exports = ProfileController; 
+module.exports = ProfileController;

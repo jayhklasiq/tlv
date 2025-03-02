@@ -1,7 +1,38 @@
 const User = require('../models/User');
 const { generatePaymentLink } = require('../config/payment');
+const CountryRegistration = require('../models/CountryRegistration');
 
 class RegisterController {
+  // Add this new method
+  static async checkAvailability(req, res) {
+    try {
+      const { country, moduleNumber, programType } = req.query;
+      
+      const countryReg = await CountryRegistration.findOne({
+        country: country,
+        moduleNumber: parseInt(moduleNumber),
+        programType: moduleNumber === '1' ? programType : 'PC'
+      });
+
+      const maxParticipants = moduleNumber === '1' && programType === 'TDE' ? 5 : 10;
+      const currentParticipants = countryReg ? countryReg.currentParticipants : 0;
+      const availableSlots = maxParticipants - currentParticipants;
+
+      res.json({
+        available: currentParticipants < maxParticipants,
+        totalSlots: maxParticipants,
+        currentParticipants: currentParticipants,
+        remainingSlots: availableSlots,
+        isFull: currentParticipants >= maxParticipants
+      });
+    } catch (error) {
+      console.error('Availability check error:', error);
+      res.status(500).json({
+        error: 'Failed to check availability'
+      });
+    }
+  }
+
   static async showForm(req, res) {
     res.render('pages/register', { errors: [], success: false });
   }
@@ -63,6 +94,22 @@ class RegisterController {
         return res.render('pages/register', { errors, success: false });
       }
 
+      // Check country participant limits
+      const countryReg = await CountryRegistration.findOne({
+        country: country,
+        moduleNumber: parseInt(moduleNumber),
+        programType: moduleNumber === '1' ? programType : 'PC'
+      });
+
+      const maxParticipants = moduleNumber === '1' && programType === 'TDE' ? 5 : 10;
+
+      if (countryReg && countryReg.currentParticipants >= maxParticipants) {
+        return res.render('pages/register', {
+          errors: ['Maximum participants reached for this program in your country'],
+          success: false
+        });
+      }
+
       // Create new user
       const user = new User({
         moduleNumber: parseInt(moduleNumber),
@@ -80,6 +127,25 @@ class RegisterController {
       // Save to database
       const savedUser = await user.save();
 
+      // Update country registration count
+      await CountryRegistration.findOneAndUpdate(
+        {
+          country: country,
+          moduleNumber: parseInt(moduleNumber),
+          programType: moduleNumber === '1' ? programType : 'PC'
+        },
+        {
+          $inc: { currentParticipants: 1 },
+          $setOnInsert: {
+            country: country,
+            moduleNumber: parseInt(moduleNumber),
+            programType: moduleNumber === '1' ? programType : 'PC'
+          }
+        },
+        { upsert: true, new: true }
+      );
+
+      // Generate payment link and render success page
       try {
         // Generate Stripe payment link
         const paymentLink = await generatePaymentLink(user);

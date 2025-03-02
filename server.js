@@ -1,5 +1,6 @@
 const express = require('express');
 const expressLayouts = require("express-ejs-layouts");
+const session = require('express-session');
 const path = require('path');
 const router = express.Router();
 const connectDB = require('./src/config/database');
@@ -12,8 +13,18 @@ require('dotenv').config();
 // Create an Express application
 const app = express();
 
-// Stripe webhook endpoint - this should be before any body parser middleware
-// Update the webhook endpoint
+// Add session middleware (add this before any routes)
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 48 * 60 * 60 * 1000 // 48 hours default
+  }
+}));
+
+// Stripe webhook endpoint
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
 
