@@ -73,16 +73,6 @@ app.use('/register', registerRoutes);
 app.use('/profile', profileRoutes);
 
 
-// app.post('/create-checkout-session', async (req, res) => {
-//   try {
-//     const session = await stripePayment.createCheckoutSession();
-//     res.redirect(303, session.url);
-//   } catch (error) {
-//     console.error('Checkout error:', error);
-//     res.redirect('/register?error=payment');
-//   }
-// });
-
 // Connect to MongoDB
 connectDB();
 

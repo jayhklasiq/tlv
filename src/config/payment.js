@@ -51,8 +51,12 @@ const createCheckoutSession = async (user) => {
       }
     ],
     mode: 'payment',
-    success_url: `${process.env.DOMAIN}/profile?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.DOMAIN}/register`,
+    success_url: process.env.NODE_ENV === 'production' 
+      ? `https://tlv.vercel.app/profile?session_id={CHECKOUT_SESSION_ID}` 
+      : `${process.env.DOMAIN}/profile?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: process.env.NODE_ENV === 'production'
+      ? `https://tlv.vercel.app/register`
+      : `${process.env.DOMAIN}/register`,
     metadata: {
       userId: user._id.toString(),
       moduleNumber: moduleNumber.toString(),
