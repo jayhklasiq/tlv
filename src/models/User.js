@@ -86,6 +86,15 @@ const userSchema = new mongoose.Schema({
       const date = new Date();
       return date.setDate(date.getDate() + 30); // 30 days from creation
     }
+  },
+  paymentMethod: {
+    type: String,
+    enum: ['stripe', 'paypal', null],
+    default: null
+  },
+  paymentReference: {
+    type: String,
+    default: null
   }
 });
 

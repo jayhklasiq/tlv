@@ -1,14 +1,15 @@
 <div class="max-w-4xl mx-auto p-8">
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold">My Profile</h1>
-    <button onclick="toggleEditMode()" class="bg-white text-[#060147] px-4 py-2 rounded hover:bg-gray-200">
-      Edit Profile
-    </button>
+    <button onclick="toggleEditMode()"
+      class="bg-white text-[#060147] px-4 py-2 rounded hover:bg-gray-200"> Edit Profile </button>
   </div>
-  
   <% if (locals.success) { %>
-    <div id="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-      <p><%= success %></p>
+    <div id="successMessage"
+      class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+      <p>
+        <%= success %>
+      </p>
     </div>
     <script>
       setTimeout(() => {
@@ -18,135 +19,133 @@
         }
       }, 3000);
     </script>
-  <% } %>
-  
-  <% if (locals.errors && errors.length > 0) { %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-      <% errors.forEach(error => { %>
-        <p><%= error %></p>
-      <% }); %>
-    </div>
-  <% } %>
-  
-  <div class="bg-[#060147] p-8 rounded-lg shadow-lg">
-    <form id="profileForm" action="/profile/update" method="POST" class="space-y-6" onsubmit="return validateForm()">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Personal Information -->
-        <div class="space-y-4">
-          <h2 class="text-2xl font-semibold mb-4">Personal Information</h2>
-          
-          <div>
-            <label class="block text-gray-400 mb-2">First Name</label>
-            <input type="text" name="firstName" value="<%= user.firstName %>" 
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none" 
-              disabled required>
-          </div>
-          
-          <div>
-            <label class="block text-gray-400 mb-2">Last Name</label>
-            <input type="text" name="lastName" value="<%= user.lastName %>"
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
-              disabled required>
-          </div>
-          
-          <div>
-            <label class="block text-gray-400 mb-2">Email</label>
-            <input type="email" name="email" value="<%= user.email %>"
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
-              disabled required>
-          </div>
-
-          <div>
-            <label class="block text-gray-400 mb-2">Country</label>
-            <input type="text" name="country" value="<%= user.country %>"
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
-              disabled required>
-          </div>
+    <% } %>
+      <% if (locals.errors && errors.length> 0) { %> <div
+          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <% errors.forEach(error=> { %> <p>
+              <%= error %>
+            </p>
+            <% }); %>
         </div>
-
-        <!-- Program Information -->
-        <div class="space-y-4">
-          <h2 class="text-2xl font-semibold mb-4">Program Information</h2>
-          
-          <div>
-            <label class="block text-gray-400 mb-2">Module</label>
-            <input type="text" value="Module <%= user.moduleNumber %>"
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600" disabled>
+        <% } %>
+          <div class="bg-[#060147] p-8 rounded-lg shadow-lg">
+            <form id="profileForm" action="/profile/update" method="POST"
+              class="space-y-6" onsubmit="return validateForm()">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Personal Information -->
+                <div class="space-y-4">
+                  <h2 class="text-2xl font-semibold mb-4">Personal Information</h2>
+                  <div>
+                    <label class="block text-gray-400 mb-2">First Name</label>
+                    <input type="text" name="firstName" value="<%= user.firstName %>"
+                      class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
+                      disabled required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-400 mb-2">Last Name</label>
+                    <input type="text" name="lastName" value="<%= user.lastName %>"
+                      class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
+                      disabled required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-400 mb-2">Email</label>
+                    <input type="email" name="email" value="<%= user.email %>"
+                      class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
+                      disabled required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-400 mb-2">Country</label>
+                    <input type="text" name="country" value="<%= user.country %>"
+                      class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600 focus:border-white focus:outline-none"
+                      disabled required>
+                  </div>
+                </div>
+                <!-- Program Information -->
+                <div class="space-y-4">
+                  <h2 class="text-2xl font-semibold mb-4">Program Information</h2>
+                  <div>
+                    <label class="block text-gray-400 mb-2">Module</label>
+                    <input type="text" value="Module <%= user.moduleNumber %>"
+                      class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600"
+                      disabled>
+                  </div>
+                  <div>
+                    <label class="block text-gray-400 mb-2">Program Type</label>
+                    <input type="text" value="<%= user.programType %>"
+                      class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600"
+                      disabled>
+                  </div>
+                  <div>
+                    <label class="block text-gray-400 mb-2">Payment Status</label>
+                    <div class="flex items-center space-x-4">
+                      <input type="text" value="<%= user.paymentStatus %>"
+                        class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600"
+                        disabled>
+                      <% if (user.paymentStatus==='pending' ) { %>
+                        <a href="/register/payment"
+                          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-300"> Make Payment </a>
+                        <% } %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Save Changes Button (Hidden by default) -->
+              <div id="saveChanges" class="hidden mt-6">
+                <button type="submit"
+                  class="w-full bg-white text-[#060147] px-6 py-3 rounded-lg font-semibold hover:bg-gray-200"> Save Changes </button>
+              </div>
+            </form>
+            <!-- Course Access Section -->
+            <div class="mt-12">
+              <h2 class="text-2xl font-semibold mb-4">Course Access</h2>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="/course/materials"
+                  class="block p-4 border border-gray-600 rounded hover:bg-gray-800">
+                  <h3 class="font-semibold">Course Materials</h3>
+                  <p class="text-gray-400">Access your learning resources</p>
+                </a>
+                <a href="/course/schedule"
+                  class="block p-4 border border-gray-600 rounded hover:bg-gray-800">
+                  <h3 class="font-semibold">Schedule</h3>
+                  <p class="text-gray-400">View upcoming sessions</p>
+                </a>
+              </div>
+            </div>
           </div>
-          
-          <div>
-            <label class="block text-gray-400 mb-2">Program Type</label>
-            <input type="text" value="<%= user.programType %>"
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600" disabled>
-          </div>
-          
-          <div>
-            <label class="block text-gray-400 mb-2">Payment Status</label>
-            <input type="text" value="<%= user.paymentStatus %>"
-              class="w-full px-4 py-2 border rounded-lg bg-transparent border-gray-600" disabled>
-          </div>
-        </div>
-      </div>
-
-      <!-- Save Changes Button (Hidden by default) -->
-      <div id="saveChanges" class="hidden mt-6">
-        <button type="submit" 
-          class="w-full bg-white text-[#060147] px-6 py-3 rounded-lg font-semibold hover:bg-gray-200">
-          Save Changes
-        </button>
-      </div>
-    </form>
-
-    <!-- Course Access Section -->
-    <div class="mt-12">
-      <h2 class="text-2xl font-semibold mb-4">Course Access</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <a href="/course/materials" class="block p-4 border border-gray-600 rounded hover:bg-gray-800">
-          <h3 class="font-semibold">Course Materials</h3>
-          <p class="text-gray-400">Access your learning resources</p>
-        </a>
-        <a href="/course/schedule" class="block p-4 border border-gray-600 rounded hover:bg-gray-800">
-          <h3 class="font-semibold">Schedule</h3>
-          <p class="text-gray-400">View upcoming sessions</p>
-        </a>
-      </div>
-    </div>
-  </div>
 </div>
-
 <script>
-function toggleEditMode() {
-  const inputs = document.querySelectorAll('input[name]');
-  const saveChanges = document.getElementById('saveChanges');
-  
-  inputs.forEach(input => {
-    if (!['moduleNumber', 'programType', 'paymentStatus'].includes(input.name)) {
-      input.disabled = !input.disabled;
-    }
-  });
-  
-  saveChanges.classList.toggle('hidden');
-}
+  function toggleEditMode() {
+    const inputs = document.querySelectorAll('input[name]');
+    const saveChanges = document.getElementById('saveChanges');
 
-function validateForm() {
-  const form = document.getElementById('profileForm');
-  const inputs = form.querySelectorAll('input[required]');
-  let isValid = true;
-  
-  inputs.forEach(input => {
-    if (!input.value.trim()) {
-      input.classList.add('border-red-500');
-      isValid = false;
-    } else {
-      input.classList.remove('border-red-500');
-    }
-  });
-  
-  if (!isValid) {
-    alert('Please fill in all required fields');
-    return false;
+    inputs.forEach(input => {
+      if (!['moduleNumber', 'programType', 'paymentStatus'].includes(input.name)) {
+        input.disabled = !input.disabled;
+      }
+    });
+
+    saveChanges.classList.toggle('hidden');
   }
-  
-  return true;
-}
+
+  function validateForm() {
+    const form = document.getElementById('profileForm');
+    const inputs = form.querySelectorAll('input[required]');
+    let isValid = true;
+
+    inputs.forEach(input => {
+      if (!input.value.trim()) {
+        input.classList.add('border-red-500');
+        isValid = false;
+      } else {
+        input.classList.remove('border-red-500');
+      }
+    });
+
+    if (!isValid) {
+      alert('Please fill in all required fields');
+      return false;
+    }
+
+    return true;
+  }
 </script>

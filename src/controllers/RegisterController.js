@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { generatePaymentLink } = require('../config/payment');
+const { generatePaymentLinks } = require('../config/payment');
 const CountryRegistration = require('../models/CountryRegistration');
 
 class RegisterController {
@@ -7,7 +7,7 @@ class RegisterController {
   static async checkAvailability(req, res) {
     try {
       const { country, moduleNumber, programType } = req.query;
-      
+
       const countryReg = await CountryRegistration.findOne({
         country: country,
         moduleNumber: parseInt(moduleNumber),
@@ -147,17 +147,17 @@ class RegisterController {
 
       // Generate payment link and render success page
       try {
-        // Generate Stripe payment link
-        const paymentLink = await generatePaymentLink(user);
+        // Generate payment links
+        const paymentLinks = await generatePaymentLinks(user);
 
-        // Render success view with payment link
+        // Render success view with payment links
         res.render('pages/registration-success', {
           success: true,
           title: `Module ${moduleNumber} Registration Successful`,
           pageTitle: 'Registration Successful',
           user: savedUser,
           moduleNumber,
-          paymentLink,
+          paymentLinks, // Now includes Stripe and PayPal links
           moduleTemplate: `module${moduleNumber}`,
           errors: []
         });

@@ -24,7 +24,7 @@ app.use(session({
   }
 }));
 
-// Stripe webhook endpoint
+// Stripe webhook endpoint - MUST BE BEFORE THE JSON BODY PARSER
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
 
@@ -46,7 +46,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
   }
 });
 
-// Middleware
+// Middleware - MUST BE AFTER WEBHOOK ROUTE
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'src/public')));
@@ -64,6 +64,7 @@ const contactRoutes = require('./src/routes/contactRoutes');
 const moduleRoutes = require('./src/routes/moduleRoutes');
 const registerRoutes = require('./src/routes/registerRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
+const paypalRoutes = require('./src/routes/paypalroutes');
 
 app.use('/', homeRoutes);
 app.use('/about', aboutRoutes);
@@ -71,7 +72,18 @@ app.use('/contact', contactRoutes);
 app.use('/program', moduleRoutes);
 app.use('/register', registerRoutes);
 app.use('/profile', profileRoutes);
+app.use('/api', paypalRoutes);
 
+// Add a route for payment errors
+app.get('/payment-error', (req, res) => {
+  const errorMessage = req.query.message || 'An unknown error occurred during payment processing';
+  res.render('pages/payment-error', {
+    errorMessage,
+    layout: 'layouts/layout'
+  });
+});
+
+const paypal_url = process.env.PAYPAL_MODE === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
 
 // Connect to MongoDB
 connectDB();

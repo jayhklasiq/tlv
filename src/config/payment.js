@@ -4,23 +4,23 @@ const User = require('../models/User');
 const PRICE_CONFIG = {
   1: {
     PC: {
-      amount: 50000, // $500 in cents
+      amount: 50000, // $500 in cents for Stripe
       name: 'Leadership Voice Masterclass - Module 1 (PC)',
       maxParticipants: 10
     },
     TDE: {
-      amount: 100000, // $1000 in cents
+      amount: 100000, // $1000 in cents for Stripe
       name: 'Leadership Voice Masterclass - Module 1 (TDE)',
       maxParticipants: 5
     }
   },
   2: {
-    amount: 50000, // $500 in cents
+    amount: 50000, // $500 in cents for Stripe
     name: 'Leadership Voice Masterclass - Module 2',
     maxParticipants: 10
   },
   3: {
-    amount: 50000, // $500 in cents
+    amount: 50000, // $500 in cents for Stripe
     name: 'Leadership Voice Masterclass - Module 3',
     maxParticipants: 10
   }
@@ -51,12 +51,12 @@ const createCheckoutSession = async (user) => {
       }
     ],
     mode: 'payment',
-    success_url: process.env.NODE_ENV === 'production' 
-      ? `https://tlv.vercel.app/profile?session_id={CHECKOUT_SESSION_ID}` 
+    success_url: process.env.NODE_ENV === 'production'
+      ? `https://tlv.vercel.app/profile?session_id={CHECKOUT_SESSION_ID}`
       : `${process.env.DOMAIN}/profile?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: process.env.NODE_ENV === 'production'
-      ? `https://tlv.vercel.app/register`
-      : `${process.env.DOMAIN}/register`,
+      ? `https://tlv.vercel.app/`
+      : `${process.env.DOMAIN}/`,
     metadata: {
       userId: user._id.toString(),
       moduleNumber: moduleNumber.toString(),
@@ -71,11 +71,21 @@ const handleSuccessfulPayment = async (session) => {
   const { userId } = session.metadata;
   console.log('Processing successful payment for user:', userId);
   try {
-    const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await User.findById(userId);
+
+    // Determine the new account expiry based on payment status
+    const newAccountExpiry = updatedUser.paymentStatus === 'pending' ?
+      null :
+      new Date(new Date().setDate(new Date().getDate() + 30)); // Set to 30 days from now if pending
+
+    // Update user information
+    await User.findByIdAndUpdate(
       userId,
       {
         paymentStatus: 'completed',
-        accountExpiry: null
+        accountExpiry: newAccountExpiry, // Set to null if payment is completed
+        paymentMethod: 'stripe',
+        paymentReference: session.id
       },
       { new: true }
     );
@@ -104,19 +114,24 @@ const webhookHandler = async (event) => {
   }
 };
 
-
-const generatePaymentLink = async (user) => {
+// This will now get payment links for both Stripe and PayPal
+const generatePaymentLinks = async (user) => {
   try {
-    const session = await createCheckoutSession(user);
-    return session.url;
+    const stripeSession = await createCheckoutSession(user);
+    
+    return {
+      stripe: stripeSession.url,
+      // We don't need to generate a PayPal link here as it's handled client-side
+      paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
+    };
   } catch (error) {
     console.error('Payment link generation error:', error);
-    throw new Error('Failed to generate payment link');
+    throw new Error('Failed to generate payment links');
   }
 };
 
 module.exports = {
   createCheckoutSession,
-  generatePaymentLink,
+  generatePaymentLinks,
   webhookHandler
 };
