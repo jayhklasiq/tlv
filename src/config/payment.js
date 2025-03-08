@@ -73,17 +73,17 @@ const handleSuccessfulPayment = async (session) => {
   try {
     const updatedUser = await User.findById(userId);
 
-    // Determine the new account expiry based on payment status
-    const newAccountExpiry = updatedUser.paymentStatus === 'pending' ?
-      null :
-      new Date(new Date().setDate(new Date().getDate() + 30)); // Set to 30 days from now if pending
+    // // Determine the new account expiry based on payment status
+    // const newAccountExpiry = updatedUser.paymentStatus === 'pending' ?
+    //   null :
+    //   new Date(new Date().setDate(new Date().getDate() + 30)); // Set to 30 days from now if pending
 
     // Update user information
     await User.findByIdAndUpdate(
       userId,
       {
         paymentStatus: 'completed',
-        accountExpiry: newAccountExpiry, // Set to null if payment is completed
+        accountExpiry: null, // Set to null if payment is completed
         paymentMethod: 'stripe',
         paymentReference: session.id
       },
@@ -118,7 +118,7 @@ const webhookHandler = async (event) => {
 const generatePaymentLinks = async (user) => {
   try {
     const stripeSession = await createCheckoutSession(user);
-    
+
     return {
       stripe: stripeSession.url,
       // We don't need to generate a PayPal link here as it's handled client-side
