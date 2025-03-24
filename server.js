@@ -69,7 +69,7 @@ const contactRoutes = require('./src/routes/contactRoutes');
 const moduleRoutes = require('./src/routes/moduleRoutes');
 const registerRoutes = require('./src/routes/registerRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
-const paypalRoutes = require('./src/routes/paypalroutes');
+const paypalRoutes = require('./src/routes/paypalRoutes');
 
 app.use('/', homeRoutes);
 app.use('/about', aboutRoutes);
