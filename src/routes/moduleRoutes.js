@@ -3,7 +3,7 @@ const router = express.Router();
 const ModuleController = require('../controllers/ModuleController');
 
 router.get('/module1', ModuleController.module1);
-router.get('/module2', ModuleController.module2);
-router.get('/module3', ModuleController.module3);
+router.get('/transformative-sessions', ModuleController.transformative);
+router.get('/faqs', ModuleController.faqs);
 
 module.exports = router; 

@@ -1,22 +1,22 @@
 class ModuleController {
   static module1(req, res) {
     res.render('pages/module1', {
-      title: 'Module 1 - The Leadership Voice Masterclass',
-      pageTitle: 'What is The Leadership Voice Masterclass?',
+      title: 'STRATEGIC LEADERSHIP COMMUNICATION: Mastering Influence, Storytelling & Brand Power',
+      pageTitle: 'STRATEGIC LEADERSHIP COMMUNICATION',
     });
   }
 
-  static module2(req, res) {
-    res.render('pages/module2', {
+  static transformative(req, res) {
+    res.render('pages/transformative-sessions', {
       title: 'Module 2 - Advanced Leadership Communication',
       pageTitle: 'Advanced Leadership Communication',
     });
   }
 
-  static module3(req, res) {
-    res.render('pages/module3', {
-      title: 'Module 3 - Executive Presence & Influence',
-      pageTitle: 'Executive Presence & Influence',
+  static faqs(req, res) {
+    res.render('pages/faqs', {
+      title: 'FAQs',
+      pageTitle: 'Frequently Asked Questions',
     });
   }
 }
