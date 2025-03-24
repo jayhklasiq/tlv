@@ -21,7 +21,7 @@
       },
       {
         "src": "/js/(.*)",
-        "dest": "src/public/js/$1"
+        "dest": "src/public/javascript/$1"
       },
       {
         "src": "/(.*)",
