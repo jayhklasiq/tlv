@@ -1,31 +1,28 @@
-import {
+const {
   ApiError,
-  CheckoutPaymentIntent,
   Client,
   Environment,
   LogLevel,
   OrdersController,
   PaymentsController,
-} from "@paypal/paypal-server-sdk";
-import bodyParser from "body-parser";
+} = require("@paypal/paypal-server-sdk");
+const User = require('../models/User');
 
-const app = express();
-app.use(bodyParser.json());
-
-
+// Initialize PayPal client
 const client = new Client({
   clientCredentialsAuthCredentials: {
     oAuthClientId: process.env.PAYPAL_CLIENT_ID,
     oAuthClientSecret: process.env.PAYPAL_CLIENT_SECRET,
   },
   timeout: 0,
-  environment: Environment.Sandbox,
+  environment: process.env.PAYPAL_MODE === 'sandbox' ? Environment.Sandbox : Environment.Production,
   logging: {
     logLevel: LogLevel.Info,
     logRequest: { logBody: true },
     logResponse: { logHeaders: true },
   },
 });
+
 const ordersController = new OrdersController(client);
 const paymentsController = new PaymentsController(client);
 
@@ -34,39 +31,68 @@ const paymentsController = new PaymentsController(client);
  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_create
  */
 const createOrder = async (cart) => {
-  // Assuming cart contains moduleNumber and programType to determine the price
-  const moduleNumber = cart.moduleNumber;
-  const programType = cart.programType;
+  try {
+    const { moduleNumber, programType, userId } = cart;
 
-  // Define price configuration similar to Stripe
-  const PRICE_CONFIG = {
-    1: {
-      PC: 500, // $500
-      TDE: 1000 // $1000
-    },
-    2: 500, // $500
-    3: 500 // $500
-  };
+    // Define price configuration similar to Stripe
+    const PRICE_CONFIG = {
+      1: {
+        PC: 500, // $500
+        TDE: 1000 // $1000
+      },
+      2: 500, // $500
+      3: 500 // $500
+    };
 
-  // Determine the order amount based on module and program type
-  const amount = moduleNumber === 1 ? PRICE_CONFIG[moduleNumber][programType] : PRICE_CONFIG[moduleNumber];
+    // Determine the order amount based on module and program type
+    let amount;
+    const moduleNum = parseInt(moduleNumber);
 
-  const collect = {
-    body: {
-      intent: "CAPTURE",
-      purchaseUnits: [
-        {
+    if (!PRICE_CONFIG[moduleNum]) {
+      throw new Error(`Invalid module number: ${moduleNum}`);
+    }
+
+    if (moduleNum === 1) {
+      if (!programType || !PRICE_CONFIG[moduleNum][programType]) {
+        throw new Error(`Invalid program type for module 1: ${programType}`);
+      }
+      amount = PRICE_CONFIG[moduleNum][programType];
+    } else {
+      amount = PRICE_CONFIG[moduleNum];
+    }
+
+    // Get user info if userId is provided
+    let userInfo = { firstName: 'Customer', lastName: '' };
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user) {
+        userInfo = {
+          firstName: user.firstName,
+          lastName: user.lastName
+        };
+      }
+    }
+
+    const collect = {
+      body: {
+        intent: "CAPTURE",
+        purchaseUnits: [{
           amount: {
             currencyCode: "USD",
-            value: amount.toString(), // Convert to string for PayPal
+            value: amount.toString()
           },
-        },
-      ],
-    },
-    prefer: "return=minimal",
-  };
+          description: `Registration for ${userInfo.firstName} ${userInfo.lastName}`,
+          customId: userId || '',
+          invoiceId: `TLV-${Date.now()}-${moduleNum}`
+        }],
+        applicationContext: {
+          brandName: "The Leadership Voice",
+          shippingPreference: "NO_SHIPPING"
+        }
+      },
+      prefer: "return=representation"
+    };
 
-  try {
     const { body, ...httpResponse } = await ordersController.ordersCreate(collect);
     return {
       jsonResponse: JSON.parse(body),
@@ -76,60 +102,56 @@ const createOrder = async (cart) => {
     if (error instanceof ApiError) {
       throw new Error(error.message);
     }
+    throw error;
   }
 };
-
-// createOrder route
-app.post("/api/orders", async (req, res) => {
-  try {
-    // use the cart information passed from the front-end to calculate the order amount detals
-    const { cart } = req.body;
-    const { jsonResponse, httpStatusCode } = await createOrder(cart);
-    res.status(httpStatusCode).json(jsonResponse);
-  } catch (error) {
-    console.error("Failed to create order:", error);
-    res.status(500).json({ error: "Failed to create order." });
-  }
-});
-
-
 
 /**
  * Capture payment for the created order to complete the transaction.
  * @see https://developer.paypal.com/docs/api/orders/v2/#orders_capture
  */
 const captureOrder = async (orderID) => {
-  const collect = {
-    id: orderID,
-    prefer: "return=minimal",
-  };
-
   try {
-    const { body, ...httpResponse } = await ordersController.ordersCapture(
-      collect
-    );
-    // Get more response info...
-    // const { statusCode, headers } = httpResponse;
+    const collect = {
+      id: orderID,
+      prefer: "return=representation"
+    };
+
+    const { body, ...httpResponse } = await ordersController.ordersCapture(collect);
+    const jsonResponse = JSON.parse(body);
+
+    // Update user payment status if userId is in the order
+    try {
+      const customId = jsonResponse.purchase_units[0].custom_id;
+      if (customId) {
+        await User.findByIdAndUpdate(
+          customId,
+          {
+            paymentStatus: 'completed',
+            paymentMethod: 'paypal',
+            paymentReference: orderID
+          },
+          { new: true }
+        );
+      }
+    } catch (userUpdateError) {
+      console.error("Error updating user payment status:", userUpdateError);
+      // Continue with the response even if user update fails
+    }
+
     return {
-      jsonResponse: JSON.parse(body),
+      jsonResponse,
       httpStatusCode: httpResponse.statusCode,
     };
   } catch (error) {
     if (error instanceof ApiError) {
-      // const { statusCode, headers } = error;
       throw new Error(error.message);
     }
+    throw error;
   }
 };
 
-// captureOrder route
-app.post("/api/orders/:orderID/capture", async (req, res) => {
-  try {
-    const { orderID } = req.params;
-    const { jsonResponse, httpStatusCode } = await captureOrder(orderID);
-    res.status(httpStatusCode).json(jsonResponse);
-  } catch (error) {
-    console.error("Failed to create order:", error);
-    res.status(500).json({ error: "Failed to capture order." });
-  }
-});
+module.exports = {
+  createOrder,
+  captureOrder
+};

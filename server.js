@@ -1,6 +1,7 @@
 const express = require('express');
 const expressLayouts = require("express-ejs-layouts");
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const path = require('path');
 const router = express.Router();
 const connectDB = require('./src/config/database');
@@ -13,11 +14,15 @@ require('dotenv').config();
 // Create an Express application
 const app = express();
 
-// Add session middleware (add this before any routes)
+// Add session middleware with MongoDB store
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGOURI,
+    ttl: 48 * 60 * 60 // 48 hours
+  }),
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 48 * 60 * 60 * 1000 // 48 hours default
