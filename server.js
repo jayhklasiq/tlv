@@ -32,13 +32,13 @@ app.use(session({
 }));
 
 // Log session configuration on startup
-console.log('Session configuration:', {
-  environment: process.env.NODE_ENV,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-  proxy: process.env.NODE_ENV === 'production',
-  maxAge: 48 * 60 * 60 * 1000
-});
+// console.log('Session configuration:', {
+//   environment: process.env.NODE_ENV,
+//   secure: process.env.NODE_ENV === 'production',
+//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+//   proxy: process.env.NODE_ENV === 'production',
+//   maxAge: 48 * 60 * 60 * 1000
+// });
 
 // Add session middleware (add this before any routes)
 app.use(session({
