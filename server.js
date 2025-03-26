@@ -21,13 +21,62 @@ app.use(session({
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGOURI,
-    ttl: 48 * 60 * 60 // 48 hours
+    ttl: 30 * 24 * 60 * 60, // 30 days max for remember me
   }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 48 * 60 * 60 * 1000, // 48 hours default
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  }
+}));
+
+// Log session configuration on startup
+console.log('Session configuration:', {
+  environment: process.env.NODE_ENV,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  proxy: process.env.NODE_ENV === 'production',
+  maxAge: 48 * 60 * 60 * 1000
+});
+
+// Add session middleware (add this before any routes)
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     maxAge: 48 * 60 * 60 * 1000 // 48 hours default
   }
 }));
+
+// Middleware to extend session on activity
+app.use((req, res, next) => {
+  // Skip for static assets and webhook routes
+  if (!req.session || req.originalUrl === '/webhook' || req.originalUrl.startsWith('/src/public')) {
+    return next();
+  }
+
+  // If user is logged in, extend their session
+  if (req.session.user) {
+    // Get the original maxAge
+    const originalMaxAge = req.session.cookie.originalMaxAge || req.session.cookie.maxAge;
+
+    // Reset maxAge to original value on each request
+    req.session.cookie.maxAge = originalMaxAge;
+
+    // Store the original maxAge if not already stored
+    if (!req.session.cookie.originalMaxAge) {
+      req.session.cookie.originalMaxAge = originalMaxAge;
+    }
+
+    // Touch the session to update lastModified
+    req.session.touch();
+  }
+
+  next();
+});
 
 // Stripe webhook endpoint - MUST BE BEFORE THE JSON BODY PARSER
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {

@@ -95,6 +95,13 @@ const userSchema = new mongoose.Schema({
   paymentReference: {
     type: String,
     default: null
+  },
+  sessionExpiry: {
+    type: Date,
+    default: function () {
+      const date = new Date();
+      return date.setHours(date.getHours() + 48); // 45 hours from login
+    }
   }
 });
 

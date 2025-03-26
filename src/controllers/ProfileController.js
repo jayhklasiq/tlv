@@ -88,22 +88,45 @@ class ProfileController {
 
       // Set session duration based on remember me choice
       const sessionDuration = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 48 * 60 * 60 * 1000;
+
+      // Update session cookie maxAge
       req.session.cookie.maxAge = sessionDuration;
+
+      // Update user's session expiry
+      user.sessionExpiry = new Date(Date.now() + sessionDuration);
+      await user.save();
 
       // Store user info in session
       req.session.user = {
         email: user.email,
-        id: user._id
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName
       };
 
-      res.render('pages/profile', {
-        title: 'My Profile',
-        pageTitle: 'My Profile',
-        user,
-        errors: []
+      // Save session explicitly
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.redirect('/profile/verify');
+        }
+
+        // Log session info for debugging
+        console.log('Session created:', {
+          sessionID: req.sessionID,
+          maxAge: req.session.cookie.maxAge,
+          user: req.session.user
+        });
+
+        res.render('pages/profile', {
+          title: 'My Profile',
+          pageTitle: 'My Profile',
+          user,
+          errors: []
+        });
       });
     } catch (error) {
-      console.error('Code verification error:', error);
+      console.error('Verification error:', error);
       res.render('pages/profile-code', {
         title: 'Enter Verification Code',
         pageTitle: 'Enter Code',
@@ -116,7 +139,7 @@ class ProfileController {
   static async update(req, res) {
     try {
       const { firstName, lastName, email, country } = req.body;
-      const userId = req.session.user.id;
+      const userId = req.session.user.id || req.session.user._id;
 
       // Get the user's current data
       const currentUser = await User.findById(userId);
@@ -126,7 +149,7 @@ class ProfileController {
       }
 
       // Check if any fields actually changed
-      const hasChanges = 
+      const hasChanges =
         currentUser.firstName !== firstName ||
         currentUser.lastName !== lastName ||
         currentUser.email !== email ||
@@ -140,7 +163,7 @@ class ProfileController {
           errors: []
         });
       }
-      
+
       // Update user profile
       const updatedUser = await User.findByIdAndUpdate(
         userId,
@@ -172,19 +195,43 @@ class ProfileController {
         );
       }
 
-      // Update session with new user data
+      // Update session with complete user data, maintaining consistency with verifyCode method
       req.session.user = {
+        email: updatedUser.email,
         id: updatedUser._id,
-        email: updatedUser.email
+        _id: updatedUser._id,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName
       };
 
-      return res.render('pages/profile', {
-        title: 'Profile',
-        pageTitle: 'Profile',
-        user: updatedUser,
-        success: 'Profile updated successfully!',
-        errors: []
+      // Extend the session duration
+      if (req.session.cookie) {
+        const originalMaxAge = req.session.cookie.originalMaxAge || req.session.cookie.maxAge;
+        req.session.cookie.maxAge = originalMaxAge;
+      }
+
+      // Save the session to persist changes
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error after profile update:', err);
+        }
+
+        // Log session info for debugging
+        console.log('Updated session after profile change:', {
+          sessionID: req.sessionID,
+          maxAge: req.session.cookie.maxAge,
+          user: req.session.user
+        });
+
+        return res.render('pages/profile', {
+          title: 'Profile',
+          pageTitle: 'Profile',
+          user: updatedUser,
+          success: 'Profile updated successfully!',
+          errors: []
+        });
       });
+
     } catch (error) {
       console.error('Profile update error:', error);
       res.render('pages/profile', {
@@ -213,10 +260,10 @@ class ProfileController {
 
       // Delete the user
       await User.findByIdAndDelete(userId);
-      
+
       // Clear session
       req.session.destroy();
-      
+
       res.redirect('/');
     } catch (error) {
       console.error('Profile deletion error:', error);

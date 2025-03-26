@@ -34,8 +34,12 @@ class RegisterController {
   }
 
   static async showForm(req, res) {
-    res.render('pages/register', { errors: [], success: false });
-  }
+    res.render('pages/register', {
+      title: 'Register for Module 1',
+      pageTitle: 'Register',
+      errors: []
+    });
+  };
 
   static async submit(req, res) {
     try {
@@ -176,6 +180,39 @@ class RegisterController {
       });
     }
   }
+
+  static async paymentLink(req, res) {
+    try {
+      if (!req.session || !req.session.user) {
+        return res.redirect('/profile/verify');
+      }
+
+      const user = await User.findOne({ email: req.session.user.email });
+      if (!user) {
+        req.session.destroy();
+        return res.redirect('/profile');
+      }
+
+      // Generate payment links
+      const paymentLinks = await generatePaymentLinks(user);
+
+      // Render payment page
+      res.render('pages/registration-success', {
+        success: true,
+        title: `Module ${user.moduleNumber} Payment`,
+        pageTitle: 'Complete Payment',
+        user: user,
+        moduleNumber: user.moduleNumber,
+        paymentLinks,
+        moduleTemplate: `module${user.moduleNumber}`,
+        errors: []
+      });
+    } catch (error) {
+      console.error('Payment page error:', error);
+      res.redirect('/profile');
+    }
+  };
+
 }
 
 module.exports = RegisterController;
