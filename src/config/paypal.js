@@ -37,7 +37,7 @@ const createOrder = async (cart) => {
     // Define price configuration similar to Stripe
     const PRICE_CONFIG = {
       1: {
-        PC: 500, // $500
+        PC: 150, // $500
         TDE: 1000 // $1000
       },
       2: 500, // $500

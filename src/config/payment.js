@@ -4,7 +4,7 @@ const User = require('../models/User');
 const PRICE_CONFIG = {
   1: {
     PC: {
-      amount: 50000, // $500 in cents for Stripe
+      amount: 15000, // $150 in cents for Stripe
       name: 'Leadership Voice Masterclass - Module 1 (PC)',
       maxParticipants: 10
     },
