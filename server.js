@@ -14,13 +14,14 @@ require('dotenv').config();
 // Create an Express application
 const app = express();
 
- // Add session middleware with MongoDB store
-app.set('trust proxy', 1);
+// Add session middleware with MongoDB store
+app.set('trust proxy', true);
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  name: 'loggedInUser',
   store: MongoStore.create({
     mongoUrl: process.env.MONGOURI,
     ttl: 30 * 24 * 60 * 60, // 30 days max for remember me
@@ -28,58 +29,56 @@ app.use(session({
   cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 48 * 60 * 60 * 1000, // 48 hours default
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    sameSite: 'strict',  // Ensures cookie persistence
+    maxAge: 48 * 60 * 60 * 1000 // Default: 48 hours
   }
 }));
 
-
-// Log session configuration on startup
-// console.log('Session configuration:', {
-//   environment: process.env.NODE_ENV,
-//   secure: process.env.NODE_ENV === 'production',
-//   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-//   proxy: process.env.NODE_ENV === 'production',
-//   maxAge: 48 * 60 * 60 * 1000
-// });
-
-// Add session middleware (add this before any routes)
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 48 * 60 * 60 * 1000 // 48 hours default
-  }
-}));
+// Log session setup
+console.log('Session initialized with:', {
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  maxAge: 48 * 60 * 60 * 1000
+});
 
 // Middleware to extend session on activity
 app.use((req, res, next) => {
-  // Skip for static assets and webhook routes
+  // Skip session update for static assets and webhook routes
   if (!req.session || req.originalUrl === '/webhook' || req.originalUrl.startsWith('/src/public')) {
     return next();
   }
 
   // If user is logged in, extend their session
   if (req.session.user) {
-    // Get the original maxAge
-    const originalMaxAge = req.session.cookie.originalMaxAge || req.session.cookie.maxAge;
-
-    // Reset maxAge to original value on each request
-    req.session.cookie.maxAge = originalMaxAge;
-
-    // Store the original maxAge if not already stored
+    // Ensure original maxAge is set
     if (!req.session.cookie.originalMaxAge) {
-      req.session.cookie.originalMaxAge = originalMaxAge;
+      req.session.cookie.originalMaxAge = req.session.cookie.maxAge || (48 * 60 * 60 * 1000); // Default: 48 hours
     }
 
-    // Touch the session to update lastModified
+    // Reset maxAge to the original value on each request
+    req.session.cookie.maxAge = req.session.cookie.originalMaxAge;
+
+    // Refresh session expiration in MongoDB (if stored in DB)
+    if (req.sessionStore && req.sessionID) {
+      req.sessionStore.get(req.sessionID, (err, sessionData) => {
+        if (!err && sessionData) {
+          sessionData.cookie.expires = new Date(Date.now() + req.session.cookie.maxAge);
+          req.sessionStore.set(req.sessionID, sessionData, (err) => {
+            if (err) {
+              console.error('Failed to extend session in store:', err);
+            }
+          });
+        }
+      });
+    }
+
+    // Extend session activity
     req.session.touch();
   }
 
   next();
 });
+
 
 // Stripe webhook endpoint - MUST BE BEFORE THE JSON BODY PARSER
 app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {

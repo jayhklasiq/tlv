@@ -72,6 +72,7 @@ class ProfileController {
 
   static async verifyCode(req, res) {
     const { email, code, rememberMe } = req.body;
+
     try {
       const verification = await VerificationCode.findOne({ email, code });
       if (!verification) {
@@ -86,23 +87,30 @@ class ProfileController {
       const user = await User.findOne({ email });
       await VerificationCode.deleteOne({ email, code });
 
-      // Set session duration based on remember me choice
-      const sessionDuration = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 48 * 60 * 60 * 1000;
+      // Determine session duration
+      const sessionDuration = rememberMe
+        ? 30 * 24 * 60 * 60 * 1000  // 30 days
+        : 48 * 60 * 60 * 1000;      // 48 hours
 
-      // Update session cookie maxAge
-      req.session.cookie.maxAge = sessionDuration;
-
-      // Update user's session expiry
-      user.sessionExpiry = new Date(Date.now() + sessionDuration);
-      await user.save();
-
-      // Store user info in session
+      // Store user in session
       req.session.user = {
         email: user.email,
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName
       };
+
+      // Update session cookie settings
+      req.session.cookie = {
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: sessionDuration,
+        sameSite: 'strict' // Prevents cross-site session loss
+      };
+
+      // Ensure database expiry matches session
+      user.sessionExpiry = new Date(Date.now() + sessionDuration);
+      await user.save();
 
       // Save session explicitly
       req.session.save((err) => {
@@ -111,8 +119,7 @@ class ProfileController {
           return res.redirect('/profile/verify');
         }
 
-        // Log session info for debugging
-        console.log('Session created:', {
+        console.log('Session successfully saved:', {
           sessionID: req.sessionID,
           maxAge: req.session.cookie.maxAge,
           user: req.session.user
@@ -136,13 +143,17 @@ class ProfileController {
     }
   }
 
+
   static async update(req, res) {
     try {
       const { firstName, lastName, email, country } = req.body;
       const userId = req.session.user.id || req.session.user._id;
+      console.log('Request body from Update:', req.body)
+
 
       // Get the user's current data
       const currentUser = await User.findById(userId);
+      console.log(currentUser);
       if (!currentUser) {
         req.session.destroy();
         return res.redirect('/profile/verify');

@@ -5,17 +5,31 @@ const isAuthenticated = async (req, res, next) => {
   if (req.session && req.session.user) {
     const user = await User.findById(req.session.user.id);
 
-    if (user && user.sessionExpiry > new Date()) {
-      // Update session expiry on activity
-      user.sessionExpiry = new Date(Date.now() + (45 * 60 * 60 * 1000));
-      await user.save();
-      return next();
+    if (user) {
+      const now = new Date();
+      if (user.sessionExpiry > now) {
+        // Extend session on activity
+        const remainingTime = user.sessionExpiry - now;
+        req.session.cookie.maxAge = remainingTime;
+        user.sessionExpiry = new Date(Date.now() + remainingTime);
+        await user.save();
+
+        console.log('Session extended:', {
+          user: user.email,
+          newExpiry: user.sessionExpiry,
+          sessionMaxAge: req.session.cookie.maxAge
+        });
+
+        return next();
+      }
+
+      console.log('Session expired for:', user.email);
     }
 
-    // Session expired - clear it
     req.session.destroy();
     return res.redirect('/profile/verify');
   }
+
   return res.redirect('/profile/verify');
 };
 
