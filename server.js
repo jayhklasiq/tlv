@@ -14,7 +14,25 @@ require('dotenv').config();
 // Create an Express application
 const app = express();
 
-// Add session middleware with MongoDB store
+// // Add session middleware with MongoDB store
+// app.use(session({
+//   secret: process.env.SESSION_SECRET,
+//   resave: false,
+//   saveUninitialized: false,
+//   store: MongoStore.create({
+//     mongoUrl: process.env.MONGOURI,
+//     ttl: 30 * 24 * 60 * 60, // 30 days max for remember me
+//   }),
+//   cookie: {
+//     secure: process.env.NODE_ENV === 'production',
+//     httpOnly: true,
+//     maxAge: 48 * 60 * 60 * 1000, // 48 hours default
+//     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+//   }
+// }));
+
+app.set('trust proxy', 1);
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -30,6 +48,7 @@ app.use(session({
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   }
 }));
+
 
 // Log session configuration on startup
 // console.log('Session configuration:', {
