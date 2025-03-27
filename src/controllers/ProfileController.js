@@ -120,9 +120,7 @@ class ProfileController {
         }
 
         console.log('Session successfully saved:', {
-          sessionID: req.sessionID,
-          maxAge: req.session.cookie.maxAge,
-          user: req.session.user
+          sessionID: req.session
         });
 
         res.render('pages/profile', {
@@ -142,7 +140,6 @@ class ProfileController {
       });
     }
   }
-
 
   static async update(req, res) {
     try {

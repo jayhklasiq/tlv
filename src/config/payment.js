@@ -130,8 +130,38 @@ const generatePaymentLinks = async (user) => {
   }
 };
 
+// Add the getUserFromSession function
+const getUserFromSession = async (req) => {
+  if (!req || !req.session || !req.session.user) {
+    throw new Error('User is not authenticated');
+  }
+  
+  // Try to get user by email first (most reliable)
+  if (req.session.user.email) {
+    const user = await User.findOne({ email: req.session.user.email });
+    if (user) {
+      console.log('User found by email:', user);
+      return user;
+    }
+  }
+  
+  // Fall back to ID if email lookup fails
+  const userId = req.session.user.id || req.session.user._id;
+  if (!userId) {
+    throw new Error('User ID not found in session');
+  }
+  
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error('User not found in database');
+  }
+  
+  return user;
+};
+
 module.exports = {
   createCheckoutSession,
   generatePaymentLinks,
-  webhookHandler
+  webhookHandler,
+  getUserFromSession
 };

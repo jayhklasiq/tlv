@@ -11,4 +11,4 @@ router.post('/', RegisterController.submit);
 
 router.get('/payment', RegisterController.paymentLink);
 
-module.exports = router; 
+module.exports = router;
