@@ -109,7 +109,7 @@ app.use(express.static(path.join(__dirname, 'src/public')));
 
 // Setup favicon
 app.get('/favicon.ico', (req, res) => {
-  res.sendFile(path.join(__dirname, 'src/public/favicon.ico'));
+  res.sendFile(path.join(__dirname, 'src/public/images/favicon.ico'));
 });
 
 // Set view engine
