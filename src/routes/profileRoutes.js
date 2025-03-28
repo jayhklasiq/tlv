@@ -10,6 +10,7 @@ router.post('/send-code', ProfileController.sendCode);
 router.post('/verify-code', ProfileController.verifyCode);
 router.get('/logout', ProfileController.logout);
 router.get('/check-availability', RegisterController.checkAvailability);
+router.get('/pay', ProfileController.setUpPayment);
 
 // Profile update route - protected by authentication
 router.post('/update', auth, ProfileController.update);

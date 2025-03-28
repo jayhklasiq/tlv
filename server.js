@@ -23,7 +23,7 @@ app.use(session({
   saveUninitialized: false,
   name: 'loggedInUser',
   store: MongoStore.create({
-    mongoUrl: process.env.MONGOURI,
+    mongoUrl: `${process.env.MONGOURI}/tlv`,
     ttl: 30 * 24 * 60 * 60, // 30 days max for remember me
   }),
   cookie: {

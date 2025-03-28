@@ -9,6 +9,4 @@ router.get('/', RegisterController.showForm);
 // POST route for handling form submission
 router.post('/', RegisterController.submit);
 
-router.get('/payment', RegisterController.paymentLink);
-
 module.exports = router;

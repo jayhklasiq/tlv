@@ -14,11 +14,11 @@ const isAuthenticated = async (req, res, next) => {
         user.sessionExpiry = new Date(Date.now() + remainingTime);
         await user.save();
 
-        console.log('Session extended:', {
-          user: user.email,
-          newExpiry: user.sessionExpiry,
-          sessionMaxAge: req.session.cookie.maxAge
-        });
+        // console.log('Session extended:', {
+        //   user: user.email,
+        //   newExpiry: user.sessionExpiry,
+        //   sessionMaxAge: req.session.cookie.maxAge
+        // });
 
         return next();
       }

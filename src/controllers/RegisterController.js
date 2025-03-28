@@ -1,6 +1,7 @@
 const User = require('../models/User');
-const { generatePaymentLinks } = require('../config/payment');
+const { generatePaymentLinks, getUserFromSession } = require('../config/payment');
 const CountryRegistration = require('../models/CountryRegistration');
+// const { setUpPayment } = require('./ProfileController');
 
 class RegisterController {
   // Add this new method
@@ -160,7 +161,7 @@ class RegisterController {
           title: `Module ${moduleNumber} Registration Successful`,
           pageTitle: 'Registration Successful',
           user: savedUser,
-          moduleNumber,
+          moduleNumber: savedUser.moduleNumber,
           paymentLinks, // Now includes Stripe and PayPal links
           moduleTemplate: `module${moduleNumber}`,
           errors: []
@@ -180,38 +181,6 @@ class RegisterController {
       });
     }
   }
-
-  static async paymentLink(req, res) {
-    try {
-      if (!req.session || !req.session.user) {
-        return res.redirect('/profile/verify');
-      }
-
-      const user = await User.findOne({ email: req.session.user.email });
-      if (!user) {
-        req.session.destroy();
-        return res.redirect('/profile');
-      }
-
-      // Generate payment links
-      const paymentLinks = await generatePaymentLinks(user);
-
-      // Render payment page
-      res.render('pages/registration-success', {
-        success: true,
-        title: `Module ${user.moduleNumber} Payment`,
-        pageTitle: 'Complete Payment',
-        user: user,
-        moduleNumber: user.moduleNumber,
-        paymentLinks,
-        moduleTemplate: `module${user.moduleNumber}`,
-        errors: []
-      });
-    } catch (error) {
-      console.error('Payment page error:', error);
-      res.redirect('/profile');
-    }
-  };
 
 }
 

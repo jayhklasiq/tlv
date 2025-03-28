@@ -2,6 +2,9 @@ const User = require('../models/User');
 const VerificationCode = require('../models/VerificationCode');
 const CountryRegistration = require('../models/CountryRegistration');
 const { sendVerificationCode } = require('../services/emailService');
+const { generatePaymentLinks } = require('../config/payment');
+
+
 
 class ProfileController {
   static async index(req, res) {
@@ -10,6 +13,10 @@ class ProfileController {
       if (!req.session || !req.session.user) {
         return res.redirect('/profile/verify');
       }
+
+      // console.log('Setting session user:', req.session.user);
+      // console.log('Session Store:', req.sessionStore);
+
 
       const user = await User.findOne({ email: req.session.user.email });
       if (!user) {
@@ -96,9 +103,17 @@ class ProfileController {
       req.session.user = {
         email: user.email,
         id: user._id,
+        _id: user._id,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        moduleNumber: user.moduleNumber,
+        programType: user.programType,
+        paymentStatus: user.paymentStatus
       };
+
+
+      // console.log('User stored in session:', req.session.user);
+      req.session.save();
 
       // Update session cookie settings
       req.session.cookie = {
@@ -119,9 +134,9 @@ class ProfileController {
           return res.redirect('/profile/verify');
         }
 
-        console.log('Session successfully saved:', {
-          sessionID: req.session
-        });
+        // console.log('Session successfully saved:', {
+        //   sessionID: req.session
+        // });
 
         res.render('pages/profile', {
           title: 'My Profile',
@@ -145,12 +160,12 @@ class ProfileController {
     try {
       const { firstName, lastName, email, country } = req.body;
       const userId = req.session.user.id || req.session.user._id;
-      console.log('Request body from Update:', req.body)
+      // console.log('Request body from Update:', req.body)
 
 
       // Get the user's current data
       const currentUser = await User.findById(userId);
-      console.log(currentUser);
+      // console.log(currentUser);
       if (!currentUser) {
         req.session.destroy();
         return res.redirect('/profile/verify');
@@ -224,12 +239,12 @@ class ProfileController {
           console.error('Session save error after profile update:', err);
         }
 
-        // Log session info for debugging
-        console.log('Updated session after profile change:', {
-          sessionID: req.sessionID,
-          maxAge: req.session.cookie.maxAge,
-          user: req.session.user
-        });
+        // // Log session info for debugging
+        // console.log('Updated session after profile change:', {
+        //   sessionID: req.sessionID,
+        //   maxAge: req.session.cookie.maxAge,
+        //   user: req.session.user
+        // });
 
         return res.render('pages/profile', {
           title: 'Profile',
@@ -248,6 +263,40 @@ class ProfileController {
         user: req.session.user,
         errors: ['Failed to update profile. Please try again.']
       });
+    }
+  }
+
+  static async setUpPayment(req, res) {
+    try {
+      const user = req.session.user;
+      // console.log(user);
+
+      // Generate payment links
+      const paymentLinks = await generatePaymentLinks(user);
+
+      // Render success view with payment links
+      res.render('pages/registration-success', {
+        success: true,
+        moduleNumber: user.moduleNumber,
+        title: `Module ${user.moduleNumber} Registration Successful`,
+        pageTitle: 'Registration Successful',
+        user,
+        paymentLinks, // Now includes Stripe and PayPal links
+        moduleTemplate: `module${user.moduleNumber}`, // Fixed: use user.moduleNumber instead of moduleNumber
+        errors: []
+      });
+    } catch (paymentError) {
+      console.error('Payment link generation error:', paymentError);
+
+      // Fixed: declare user variable at the beginning so it's accessible in catch block
+      const user = req.session.user;
+
+      // Delete the user if payment link generation fails
+      if (user && user._id) {
+        await User.findByIdAndDelete(user._id);
+      }
+
+      throw new Error('Payment link generation failed');
     }
   }
 
@@ -289,9 +338,11 @@ class ProfileController {
       if (err) {
         console.error('Logout error:', err);
       }
+      res.clearCookie();
       res.redirect('/');
     });
   }
+
 }
 
 module.exports = ProfileController;
