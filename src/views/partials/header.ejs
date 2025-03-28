@@ -1,5 +1,5 @@
 <header
-  class="flex justify-between items-center bg-[#060147] font-(--pf) mb-10 py-2 px-8">
+  class="flex justify-between items-center bg-[#060147] font-(--pf) mb-10 py-2 px-28">
   <a href="/">
     <img src="/images/logo.png" alt class="w-1/4" style="width: 70%;">
   </a>
@@ -105,38 +105,69 @@
   // Program dropdown toggle
   function toggleDropdown(event) {
     event.stopPropagation();
-    const dropdown = document.getElementById('programDropdown');
-    const arrow = document.getElementById('dropdownArrow');
-    dropdown.classList.toggle('hidden');
-    arrow.classList.toggle('rotate-180');
+    const programDropdown = document.getElementById('programDropdown');
+    const aboutDropdown = document.getElementById('aboutDropdown');
+    const dropdownArrow = document.getElementById('dropdownArrow');
+    const aboutDropdownArrow = document.getElementById('aboutDropdownArrow');
+
+    // Close About dropdown if open
+    if (!aboutDropdown.classList.contains('hidden')) {
+      aboutDropdown.classList.add('hidden');
+      aboutDropdownArrow.classList.remove('rotate-180');
+    }
+
+    // Toggle Program dropdown
+    programDropdown.classList.toggle('hidden');
+    dropdownArrow.classList.toggle('rotate-180');
   }
 
   // About dropdown toggle
   function toggleAboutDropdown(event) {
     event.stopPropagation();
-    const dropdown = document.getElementById('aboutDropdown');
-    const arrow = document.getElementById('aboutDropdownArrow');
-    dropdown.classList.toggle('hidden');
-    arrow.classList.toggle('rotate-180');
+    const programDropdown = document.getElementById('programDropdown');
+    const aboutDropdown = document.getElementById('aboutDropdown');
+    const dropdownArrow = document.getElementById('dropdownArrow');
+    const aboutDropdownArrow = document.getElementById('aboutDropdownArrow');
+
+    // Close Program dropdown if open
+    if (!programDropdown.classList.contains('hidden')) {
+      programDropdown.classList.add('hidden');
+      dropdownArrow.classList.remove('rotate-180');
+    }
+
+    // Toggle About dropdown
+    aboutDropdown.classList.toggle('hidden');
+    aboutDropdownArrow.classList.toggle('rotate-180');
+  }
+
+  // Close all dropdowns
+  function closeAllDropdowns() {
+    const programDropdown = document.getElementById('programDropdown');
+    const aboutDropdown = document.getElementById('aboutDropdown');
+    const dropdownArrow = document.getElementById('dropdownArrow');
+    const aboutDropdownArrow = document.getElementById('aboutDropdownArrow');
+
+    programDropdown.classList.add('hidden');
+    aboutDropdown.classList.add('hidden');
+    dropdownArrow.classList.remove('rotate-180');
+    aboutDropdownArrow.classList.remove('rotate-180');
   }
 
   // Close dropdowns when clicking outside
   document.addEventListener('click', function(event) {
-    const programDropdown = document.getElementById('programDropdown');
-    const aboutDropdown = document.getElementById('aboutDropdown');
-    const button = event.target.closest('button');
+    const programDropdownBtn = document.querySelector('button[onclick="toggleDropdown(event)"]');
+    const aboutDropdownBtn = document.querySelector('button[onclick="toggleAboutDropdown(event)"]');
     
-    if (!button) {
-      if (!programDropdown.classList.contains('hidden')) {
-        programDropdown.classList.add('hidden');
-        document.getElementById('dropdownArrow').classList.remove('rotate-180');
-      }
-      if (!aboutDropdown.classList.contains('hidden')) {
-        aboutDropdown.classList.add('hidden');
-        document.getElementById('aboutDropdownArrow').classList.remove('rotate-180');
-      }
+    // Check if click is not on dropdown buttons or their children
+    if (!programDropdownBtn.contains(event.target) && 
+        !aboutDropdownBtn.contains(event.target)) {
+      closeAllDropdowns();
     }
   });
+
+  // Close dropdowns when mouse leaves navigation
+  const header = document.querySelector('header');
+  header.addEventListener('mouseleave', closeAllDropdowns);
 
   // Handle window resize
   window.addEventListener('resize', () => {
@@ -147,5 +178,8 @@
     } else {
       navMenu.classList.add('hidden');
     }
+    
+    // Close dropdowns on resize
+    closeAllDropdowns();
   });
 </script>
