@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: 'smtppro.zoho.com',
   port: 465,
   secure: true,
   auth: {
@@ -25,4 +25,20 @@ const sendVerificationCode = async (email, code) => {
   return await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendVerificationCode }; 
+const registerSuccessMessage = async (email, username, programType)  => {
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Leadership Voice Profile Verification',
+    html: `
+      <h1>Thank you, <strong>${username}</strong> for completing your Payment.</h1>
+      <p>Welcome to the TLV Masterclass. In your profile are all the information you'd need to begin.</p>
+      <p>Your registeration is for <strong>${programType}</strong></p>
+    `
+  };
+  return await transporter.sendMail(mailOptions);
+}
+
+module.exports = { sendVerificationCode, registerSuccessMessage };
+

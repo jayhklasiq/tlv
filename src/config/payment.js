@@ -1,5 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
+const { registerSuccessMessage } = require('../services/emailService');
+
 
 const PRICE_CONFIG = {
   1: {
@@ -69,7 +71,7 @@ const createCheckoutSession = async (user) => {
 
 const handleSuccessfulPayment = async (session) => {
   const { userId } = session.metadata;
-  console.log('Processing successful payment for user:', userId);
+  // console.log('Processing successful payment for user:', userId);
   try {
     const updatedUser = await User.findById(userId);
 
@@ -77,6 +79,12 @@ const handleSuccessfulPayment = async (session) => {
     // const newAccountExpiry = updatedUser.paymentStatus === 'pending' ?
     //   null :
     //   new Date(new Date().setDate(new Date().getDate() + 30)); // Set to 30 days from now if pending
+    const email = updatedUser.email
+    const username = updatedUser.firstName
+    const programType = updatedUser.programType
+
+    await registerSuccessMessage(email, username, programType);
+
 
     // Update user information
     await User.findByIdAndUpdate(
@@ -89,7 +97,7 @@ const handleSuccessfulPayment = async (session) => {
       },
       { new: true }
     );
-    console.log('Updated user payment status:', updatedUser);
+    // console.log('Updated user payment status:', updatedUser);
   } catch (error) {
     console.error('Error updating user payment status:', error);
     throw error;
