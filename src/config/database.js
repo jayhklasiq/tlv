@@ -5,8 +5,8 @@ const connectDB = async () => {
   try {
     const mongoUri = `${process.env.MONGOURI}/tlv`;
 
-    // Set MongoDB connection timeout to three minutes
-    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 180000 });
+    // Set MongoDB connection timeout to five minutes
+    await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 300000 });
     console.log('MongoDB connected successfully to tlv database');
   } catch (error) {
     console.error('MongoDB connection error:', error);
