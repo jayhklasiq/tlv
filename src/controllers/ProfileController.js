@@ -269,7 +269,6 @@ class ProfileController {
   static async setUpPayment(req, res) {
     try {
       const user = req.session.user;
-      // console.log(user);
 
       // Generate payment links
       const paymentLinks = await generatePaymentLinks(user);
