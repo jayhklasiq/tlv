@@ -146,8 +146,13 @@ app.get('/payment-error', (req, res) => {
 
 const paypal_url = process.env.PAYPAL_MODE === 'sandbox' ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB with retry logic
+const startServer = async () => {
+  await connectDB();
+};
+
+// Start the server
+startServer();
 
 // Error handling
 app.use((err, req, res, next) => {
@@ -158,7 +163,7 @@ app.use((err, req, res, next) => {
 // Define a port to listen on
 const PORT = process.env.PORT || '3500';
 
-// Start the server
+// Start the server only after successful database connection
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
