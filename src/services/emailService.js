@@ -76,11 +76,11 @@ const registerSuccessMessage = async (email, username, programType) => {
             <ul style="padding-left: 20px; margin: 0;">
               <li style="margin-bottom: 10px;">
                 <strong>Course 1: Executive Presence & Authentic Expression</strong><br>
-                Thursday, May 29, 2025 | 2:00 PM - 5:00 PM GMT
+                Thursday, May 29, 2025 | 2:00 PM - 5:00 PM UTC
               </li>
               <li style="margin-bottom: 10px;">
                 <strong>Course 2: Persuasion, Storytelling & Strategic Influence</strong><br>
-                Friday, May 30, 2025 | 2:00 PM - 5:00 PM GMT
+                Friday, May 30, 2025 | 2:00 PM - 5:00 PM UTC
               </li>
               <li>
                 <strong>Course 3: Simulation & Live Feedback</strong><br>
