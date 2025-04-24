@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const connectDB = async () => {
   try {
-    const mongoUri = `${process.env.MONGOURI}/tlv`;
+    const mongoUri = process.env.MONGOURI;
 
     // Enhanced connection options
     const options = {
