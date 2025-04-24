@@ -108,7 +108,6 @@ const webhookHandler = async (event) => {
         await handleSuccessfulPayment(session);
         break;
       case 'payment_intent.succeeded':
-      case 'payment_intent.updated':
         // For payment intent events, we need to fetch the related session
         const paymentIntent = event.data.object;
         if (paymentIntent.metadata.sessionId) {
