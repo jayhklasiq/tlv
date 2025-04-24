@@ -579,10 +579,11 @@
               const phone = document.getElementById('phone');
               const countryCode = document.getElementById('countryCode');
 
-              if (phone.value && countryCode.value) {
-                const fullPhone = countryCode.value + phone.value;
-                phone.value = fullPhone;
+              if (phone.value.startswith(countryCode)){
+                phone = phone.slice(countryCode.length);
               }
+
+              phone.value = countryCode + phone
 
               return true;
             }
