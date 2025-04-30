@@ -6,7 +6,7 @@ const { registerSuccessMessage } = require('../services/emailService');
 const PRICE_CONFIG = {
   1: {
     PC: {
-      amount: 100, // $150 in cents for Stripe
+      amount: 50000, // $150 in cents for Stripe
       name: 'Leadership Voice Masterclass - Module 1 (PC)',
       maxParticipants: 10
     },
