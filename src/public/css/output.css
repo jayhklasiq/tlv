@@ -902,6 +902,12 @@
   .bg-\[url\(\'\/images\/blackstar\.jpeg\'\)\] {
     background-image: url('/images/blackstar.jpeg');
   }
+  .bg-\[url\(\'\/images\/impact\'\)\] {
+    background-image: url('/images/impact');
+  }
+  .bg-\[url\(\'\/images\/impact\.webp\'\)\] {
+    background-image: url('/images/impact.webp');
+  }
   .bg-\[url\(\'\/images\/man-in-office\.jpeg\'\)\] {
     background-image: url('/images/man-in-office.jpeg');
   }
@@ -1084,17 +1090,8 @@
   .text-\[\#0c3030\] {
     color: #0c3030;
   }
-  .text-\[\#\] {
-    color: #;
-  }
   .text-\[\#fcb900\] {
     color: #fcb900;
-  }
-  .text-\[0c3030\] {
-    color: 0c3030;
-  }
-  .text-\[white\] {
-    color: white;
   }
   .text-black {
     color: var(--color-black);
@@ -1245,13 +1242,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-blue-600);
-      }
-    }
-  }
-  .hover\:bg-blue-700 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-blue-700);
       }
     }
   }
