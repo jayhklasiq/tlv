@@ -1,186 +1,153 @@
-<header
-  class="flex justify-between items-center bg-[#060147] font-(--pf) mb-10 py-2 px-4 md:px-28">
-  <a href="/">
-    <img src="/images/logo.png" alt="The Leadership Voice Logo" class="w-1/4"
-      style="width: 70%;" loading="lazy">
-  </a>
+<header class="flex justify-between items-center bg-[#0c3030] font-(--pf) mb-10 py-2 px-4 md:px-28">
+	<a href="/">
+		<img src="/images/logo.png" alt="The Leadership Voice Logo" class="w-1/4" style="width: 70%" loading="lazy" />
+	</a>
 
-  <!-- Hamburger Menu Button (visible on mobile) -->
-  <button id="menuButton" class="md:hidden text-white focus:outline-none">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path id="menuIcon" class="block" stroke-linecap="round"
-        stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      <path id="closeIcon" class="hidden" stroke-linecap="round"
-        stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-    </svg>
-  </button>
+	<!-- Hamburger Menu Button (visible on mobile) -->
+	<button id="menuButton" class="md:hidden text-white focus:outline-none">
+		<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path id="menuIcon" class="block" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+			<path id="closeIcon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+		</svg>
+	</button>
 
-  <!-- Navigation Menu -->
-  <nav id="navMenu"
-    class="hidden md:block fixed md:relative top-[60px] md:top-0 left-0 right-0 bg-[#060147] md:bg-transparent z-50">
-    <% if (!locals.user) { %>
-    <ul
-      class="flex flex-col md:flex-row justify-around gap-[20px] text-[10px] p-4 md:p-0 md:pt-2">
-      <li><a href="/"
-          class="block py-2 md:py-0 hover:text-gray-300">HOME</a></li>
-      <li class="relative">
-        <button onclick="toggleAboutDropdown(event)"
-          class="w-full text-left py-2 md:py-0 flex items-center text-white hover:text-gray-300 transition-colors duration-200">
-          ABOUT
-          <svg class="w-4 h-4 ml-1 transform transition-transform duration-200"
-            id="aboutDropdownArrow" fill="none"
-            stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div id="aboutDropdown"
-          class="hidden md:absolute w-full md:w-64 bg-[#060147] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
-          <a href="/about/purpose"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
-            Our Purpose
-          </a>
-          <a href="/about/experience"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
-            The Experience
-          </a>
-        </div>
-      </li>
-      <li class="relative">
-        <button onclick="toggleDropdown(event)"
-          class="w-full text-left py-2 md:py-0 flex items-center text-white hover:text-gray-300 transition-colors duration-200">
-          PROGRAM
-          <svg class="w-4 h-4 ml-1 transform transition-transform duration-200"
-            id="dropdownArrow" fill="none"
-            stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div id="programDropdown"
-          class="hidden md:absolute w-full md:w-64 bg-[#060147] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
-          <a href="/program/module1"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
-            MODULE OVERVIEW
-          </a>
-          <a href="/program/transformative-sessions"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
-            TRANSFORMATIVE SESSIONS
-          </a>
-          <a href="/program/faqs"
-            class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150">
-            FAQ'S
-          </a>
-        </div>
-      </li>
-      <li><a href="/contact"
-          class="block py-2 md:py-0 hover:text-gray-300">CONTACT</a></li>
-      <li><a href="/profile" class="block py-2 md:py-0 hover:text-gray-300">SIGN
-          IN</a></li>
-    </ul>
-    <% } else { %>
-    <ul
-      class="flex flex-col md:flex-row justify-around gap-[20px] text-[10px] p-4 md:p-0 md:pt-2">
-      <li><a href="/profile" class="block py-2 md:py-0 hover:text-gray-300">MY
-          PROFILE</a></li>
-      <li><a href="/profile/logout"
-          class="block py-2 md:py-0 hover:text-gray-300">SIGN OUT</a></li>
-    </ul>
-    <% } %>
-  </nav>
+	<!-- Navigation Menu -->
+	<nav id="navMenu" class="hidden md:block fixed md:relative top-[60px] md:top-0 left-0 right-0 bg-[#0c3030] md:bg-transparent z-50">
+		<% if (!locals.user) { %>
+		<ul class="flex flex-col md:flex-row justify-around gap-[20px] text-[10px] p-4 md:p-0 md:pt-2">
+			<li><a href="/" class="block py-2 md:py-0 hover:text-gray-300">HOME</a></li>
+			<li class="relative">
+				<button onclick="toggleAboutDropdown(event)" class="w-full text-left py-2 md:py-0 flex items-center text-white hover:text-gray-300 transition-colors duration-200">
+					ABOUT
+					<svg class="w-4 h-4 ml-1 transform transition-transform duration-200" id="aboutDropdownArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+					</svg>
+				</button>
+				<div id="aboutDropdown" class="hidden md:absolute w-full md:w-64 bg-[#0c3030] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
+					<a href="/about/purpose" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> Our Purpose </a>
+					<a href="/about/experience" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> Our Method </a>
+					<a href="/about/trailblazer" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> Curated For Trailblazer </a>
+					<a href="/about/impact" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> The Impact </a>
+				</div>
+			</li>
+			<li class="relative">
+				<button onclick="toggleDropdown(event)" class="w-full text-left py-2 md:py-0 flex items-center text-white hover:text-gray-300 transition-colors duration-200">
+					PROGRAM
+					<svg class="w-4 h-4 ml-1 transform transition-transform duration-200" id="dropdownArrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+					</svg>
+				</button>
+				<div id="programDropdown" class="hidden md:absolute w-full md:w-64 bg-[#0c3030] border border-gray-700 mt-2 py-2 rounded-lg shadow-xl transform origin-top transition duration-200 ease-out">
+					<a href="/program/module1" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> MODULE OVERVIEW </a>
+					<a href="/program/power-circle" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> POWER CIRCLE </a>
+					<a href="/program/tailored-development" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> TAILORED DEVELOPMENT </a>
+					<a href="/program/faqs" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> FAQ'S </a>
+					<a href="/register" class="block px-4 py-2 text-sm text-white hover:bg-gray-700 hover:text-white transition-colors duration-150"> REGISTER </a>
+				</div>
+			</li>
+			<li><a href="/contact" class="block py-2 md:py-0 hover:text-gray-300">CONTACT</a></li>
+			<li><a href="/profile" class="block py-2 md:py-0 hover:text-gray-300">SIGN IN</a></li>
+		</ul>
+		<% } else { %>
+		<ul class="flex flex-col md:flex-row justify-around gap-[20px] text-[10px] p-4 md:p-0 md:pt-2">
+			<li><a href="/profile" class="block py-2 md:py-0 hover:text-gray-300">MY PROFILE</a></li>
+			<li><a href="/profile/logout" class="block py-2 md:py-0 hover:text-gray-300">SIGN OUT</a></li>
+		</ul>
+		<% } %>
+	</nav>
 </header>
 
 <script>
-  // Hamburger menu toggle
-  const menuButton = document.getElementById('menuButton');
-  const navMenu = document.getElementById('navMenu');
-  const menuIcon = document.getElementById('menuIcon');
-  const closeIcon = document.getElementById('closeIcon');
-  
-  menuButton.addEventListener('click', () => {
-    navMenu.classList.toggle('hidden');
-    menuIcon.classList.toggle('hidden');
-    closeIcon.classList.toggle('hidden');
-  });
+	// Hamburger menu toggle
+	const menuButton = document.getElementById("menuButton");
+	const navMenu = document.getElementById("navMenu");
+	const menuIcon = document.getElementById("menuIcon");
+	const closeIcon = document.getElementById("closeIcon");
 
-  // Program dropdown toggle
-  function toggleDropdown(event) {
-    event.stopPropagation();
-    const programDropdown = document.getElementById('programDropdown');
-    const aboutDropdown = document.getElementById('aboutDropdown');
-    const dropdownArrow = document.getElementById('dropdownArrow');
-    const aboutDropdownArrow = document.getElementById('aboutDropdownArrow');
+	menuButton.addEventListener("click", () => {
+		navMenu.classList.toggle("hidden");
+		menuIcon.classList.toggle("hidden");
+		closeIcon.classList.toggle("hidden");
+	});
 
-    // Close About dropdown if open
-    if (!aboutDropdown.classList.contains('hidden')) {
-      aboutDropdown.classList.add('hidden');
-      aboutDropdownArrow.classList.remove('rotate-180');
-    }
+	// Program dropdown toggle
+	function toggleDropdown(event) {
+		event.stopPropagation();
+		const programDropdown = document.getElementById("programDropdown");
+		const aboutDropdown = document.getElementById("aboutDropdown");
+		const dropdownArrow = document.getElementById("dropdownArrow");
+		const aboutDropdownArrow = document.getElementById("aboutDropdownArrow");
 
-    // Toggle Program dropdown
-    programDropdown.classList.toggle('hidden');
-    dropdownArrow.classList.toggle('rotate-180');
-  }
+		// Close About dropdown if open
+		if (!aboutDropdown.classList.contains("hidden")) {
+			aboutDropdown.classList.add("hidden");
+			aboutDropdownArrow.classList.remove("rotate-180");
+		}
 
-  // About dropdown toggle
-  function toggleAboutDropdown(event) {
-    event.stopPropagation();
-    const programDropdown = document.getElementById('programDropdown');
-    const aboutDropdown = document.getElementById('aboutDropdown');
-    const dropdownArrow = document.getElementById('dropdownArrow');
-    const aboutDropdownArrow = document.getElementById('aboutDropdownArrow');
+		// Toggle Program dropdown
+		programDropdown.classList.toggle("hidden");
+		dropdownArrow.classList.toggle("rotate-180");
+	}
 
-    // Close Program dropdown if open
-    if (!programDropdown.classList.contains('hidden')) {
-      programDropdown.classList.add('hidden');
-      dropdownArrow.classList.remove('rotate-180');
-    }
+	// About dropdown toggle
+	function toggleAboutDropdown(event) {
+		event.stopPropagation();
+		const programDropdown = document.getElementById("programDropdown");
+		const aboutDropdown = document.getElementById("aboutDropdown");
+		const dropdownArrow = document.getElementById("dropdownArrow");
+		const aboutDropdownArrow = document.getElementById("aboutDropdownArrow");
 
-    // Toggle About dropdown
-    aboutDropdown.classList.toggle('hidden');
-    aboutDropdownArrow.classList.toggle('rotate-180');
-  }
+		// Close Program dropdown if open
+		if (!programDropdown.classList.contains("hidden")) {
+			programDropdown.classList.add("hidden");
+			dropdownArrow.classList.remove("rotate-180");
+		}
 
-  // Close all dropdowns
-  function closeAllDropdowns() {
-    const programDropdown = document.getElementById('programDropdown');
-    const aboutDropdown = document.getElementById('aboutDropdown');
-    const dropdownArrow = document.getElementById('dropdownArrow');
-    const aboutDropdownArrow = document.getElementById('aboutDropdownArrow');
+		// Toggle About dropdown
+		aboutDropdown.classList.toggle("hidden");
+		aboutDropdownArrow.classList.toggle("rotate-180");
+	}
 
-    programDropdown.classList.add('hidden');
-    aboutDropdown.classList.add('hidden');
-    dropdownArrow.classList.remove('rotate-180');
-    aboutDropdownArrow.classList.remove('rotate-180');
-  }
+	// Close all dropdowns
+	function closeAllDropdowns() {
+		const programDropdown = document.getElementById("programDropdown");
+		const aboutDropdown = document.getElementById("aboutDropdown");
+		const dropdownArrow = document.getElementById("dropdownArrow");
+		const aboutDropdownArrow = document.getElementById("aboutDropdownArrow");
 
-  // Close dropdowns when clicking outside
-  document.addEventListener('click', function(event) {
-    const programDropdownBtn = document.querySelector('button[onclick="toggleDropdown(event)"]');
-    const aboutDropdownBtn = document.querySelector('button[onclick="toggleAboutDropdown(event)"]');
-    
-    // Check if click is not on dropdown buttons or their children
-    if (!programDropdownBtn.contains(event.target) && 
-        !aboutDropdownBtn.contains(event.target)) {
-      closeAllDropdowns();
-    }
-  });
+		programDropdown.classList.add("hidden");
+		aboutDropdown.classList.add("hidden");
+		dropdownArrow.classList.remove("rotate-180");
+		aboutDropdownArrow.classList.remove("rotate-180");
+	}
 
-  // Close dropdowns when mouse leaves navigation
-  const header = document.querySelector('header');
-  header.addEventListener('mouseleave', closeAllDropdowns);
+	// Close dropdowns when clicking outside
+	document.addEventListener("click", function (event) {
+		const programDropdownBtn = document.querySelector('button[onclick="toggleDropdown(event)"]');
+		const aboutDropdownBtn = document.querySelector('button[onclick="toggleAboutDropdown(event)"]');
 
-  // Handle window resize
-  window.addEventListener('resize', () => {
-    if (window.innerWidth >= 768) { // md breakpoint
-      navMenu.classList.remove('hidden');
-      menuIcon.classList.remove('hidden');
-      closeIcon.classList.add('hidden');
-    } else {
-      navMenu.classList.add('hidden');
-    }
-    
-    // Close dropdowns on resize
-    closeAllDropdowns();
-  });
+		// Check if click is not on dropdown buttons or their children
+		if (!programDropdownBtn.contains(event.target) && !aboutDropdownBtn.contains(event.target)) {
+			closeAllDropdowns();
+		}
+	});
+
+	// Close dropdowns when mouse leaves navigation
+	const header = document.querySelector("header");
+	header.addEventListener("mouseleave", closeAllDropdowns);
+
+	// Handle window resize
+	window.addEventListener("resize", () => {
+		if (window.innerWidth >= 768) {
+			// md breakpoint
+			navMenu.classList.remove("hidden");
+			menuIcon.classList.remove("hidden");
+			closeIcon.classList.add("hidden");
+		} else {
+			navMenu.classList.add("hidden");
+		}
+
+		// Close dropdowns on resize
+		closeAllDropdowns();
+	});
 </script>

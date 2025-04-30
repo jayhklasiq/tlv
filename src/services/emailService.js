@@ -17,7 +17,7 @@ const sendVerificationCode = async (email, code) => {
     subject: 'Leadership Voice Profile Verification',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <div style="background-color: #060147; padding: 20px; text-align: center;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center;">
           <h1 style="color: #fcb900; margin: 0; font-size: 24px;">The Leadership Voice</h1>
         </div>
         
@@ -25,7 +25,7 @@ const sendVerificationCode = async (email, code) => {
           <p style="color: #4c42ff; font-size: 20px; font-weight: bold; margin-bottom: 15px;">Profile Access Verification</p>
           
           <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #fcb900; margin: 20px 0;">
-            <p style="margin: 0; color: #060147; font-weight: bold;">Your Verification Code:</p>
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Your Verification Code:</p>
             <p style="margin: 10px 0 0 0; font-size: 24px; letter-spacing: 2px; color: #4c42ff;">
               <strong>${code}</strong>
             </p>
@@ -39,7 +39,7 @@ const sendVerificationCode = async (email, code) => {
           <span style="color: #4c42ff;">The Leadership Voice Team</span></p>
         </div>
 
-        <div style="background-color: #060147; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
           <p style="margin: 0;">© 2024 The Leadership Voice. All rights reserved.</p>
         </div>
       </div>
@@ -55,24 +55,24 @@ const registerSuccessMessage = async (email, username, programType) => {
   if (programType === 'PC') {
     programMessage = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <div style="background-color: #060147; padding: 20px; text-align: center;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center;">
           <h1 style="color: #fcb900; margin: 0; font-size: 24px;">The Leadership Voice</h1>
         </div>
         
         <div style="padding: 20px; background-color: #ffffff;">
-          <p style="color: #060147; font-size: 18px; margin-bottom: 20px;">Dear ${username},</p>
+          <p style="color: #0c3030; font-size: 18px; margin-bottom: 20px;">Dear ${username},</p>
           
           <p style="color: #4c42ff; font-size: 20px; font-weight: bold; margin-bottom: 15px;">Congratulations on Your Registration!</p>
           
           <p style="margin-bottom: 15px;">You are officially registered for Module 1: Foundations of Leadership Communication, part of The Leadership Voice Masterclass Series—a transformative experience curated for purpose-driven African leaders like you.</p>
           
           <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #fcb900; margin: 20px 0;">
-            <p style="margin: 0; color: #060147; font-weight: bold;">Module Overview:</p>
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Module Overview:</p>
             <p style="margin: 10px 0 0 0;">This foundational module is centered around the theme <strong>Presence. Persuasion. Power.</strong> Through guided instruction, real-time application, and personalized feedback, you will gain the confidence, clarity, and conviction to lead conversations that inspire action and drive results.</p>
           </div>
 
           <div style="margin: 20px 0;">
-            <p style="color: #060147; font-weight: bold; margin-bottom: 10px;">Your Schedule:</p>
+            <p style="color: #0c3030; font-weight: bold; margin-bottom: 10px;">Your Schedule:</p>
             <ul style="padding-left: 20px; margin: 0;">
               <li style="margin-bottom: 10px;">
                 <strong>Course 1: Executive Presence & Authentic Expression</strong><br>
@@ -90,7 +90,7 @@ const registerSuccessMessage = async (email, username, programType) => {
           </div>
 
           <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0;">
-            <p style="margin: 0; color: #060147; font-weight: bold;">Power Circle Format:</p>
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Power Circle Format:</p>
             <p style="margin: 10px 0 0 0;">You have chosen the Power Circle format, which means you'll be participating in a dynamic group-based learning experience designed to foster community, accountability, and collaboration among peers.</p>
           </div>
 
@@ -102,7 +102,7 @@ const registerSuccessMessage = async (email, username, programType) => {
           <span style="color: #4c42ff;">The Leadership Voice Team</span></p>
         </div>
 
-        <div style="background-color: #060147; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
           <p style="margin: 0;">© 2024 The Leadership Voice. All rights reserved.</p>
         </div>
       </div>
@@ -110,24 +110,24 @@ const registerSuccessMessage = async (email, username, programType) => {
   } else if (programType === 'TDE') {
     programMessage = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-        <div style="background-color: #060147; padding: 20px; text-align: center;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center;">
           <h1 style="color: #fcb900; margin: 0; font-size: 24px;">The Leadership Voice</h1>
         </div>
         
         <div style="padding: 20px; background-color: #ffffff;">
-          <p style="color: #060147; font-size: 18px; margin-bottom: 20px;">Dear ${username},</p>
+          <p style="color: #0c3030; font-size: 18px; margin-bottom: 20px;">Dear ${username},</p>
           
           <p style="color: #4c42ff; font-size: 20px; font-weight: bold; margin-bottom: 15px;">Congratulations on Your Registration!</p>
           
           <p style="margin-bottom: 15px;">You are officially registered for Module 1: Foundations of Leadership Communication, part of The Leadership Voice Masterclass Series—a transformative experience curated for purpose-driven African leaders like you.</p>
           
           <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #fcb900; margin: 20px 0;">
-            <p style="margin: 0; color: #060147; font-weight: bold;">Tailored Development Experience:</p>
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Tailored Development Experience:</p>
             <p style="margin: 10px 0 0 0;">You have selected the Tailored Experience, an exclusive one-on-one format designed to offer personalized coaching and intensive leadership communication development with Anita Erskine herself.</p>
           </div>
 
           <div style="margin: 20px 0;">
-            <p style="color: #060147; font-weight: bold; margin-bottom: 10px;">Your Personalized Schedule:</p>
+            <p style="color: #0c3030; font-weight: bold; margin-bottom: 10px;">Your Personalized Schedule:</p>
             <ul style="padding-left: 20px; margin: 0;">
               <li style="margin-bottom: 10px;">
                 <strong>Course 1: Executive Presence & Authentic Expression</strong><br>
@@ -145,7 +145,7 @@ const registerSuccessMessage = async (email, username, programType) => {
           </div>
 
           <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0;">
-            <p style="margin: 0; color: #060147; font-weight: bold;">Your Facilitator:</p>
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Your Facilitator:</p>
             <p style="margin: 10px 0 0 0;">Anita Erskine brings more than 20 years of experience in strategic communications, leadership coaching, and high-level event hosting. Her one-on-one coaching format offers rare access to insight that will support your transformation from a strong communicator to a masterful one.</p>
           </div>
 
@@ -157,7 +157,7 @@ const registerSuccessMessage = async (email, username, programType) => {
           <span style="color: #4c42ff;">The Leadership Voice Team</span></p>
         </div>
 
-        <div style="background-color: #060147; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
           <p style="margin: 0;">© 2024 The Leadership Voice. All rights reserved.</p>
         </div>
       </div>

@@ -6,10 +6,18 @@ class ModuleController {
     });
   }
 
-  static transformative(req, res) {
-    res.render('pages/transformative-sessions', {
-      title: 'Module 2 - Advanced Leadership Communication',
-      pageTitle: 'Advanced Leadership Communication',
+  static power_circle(req, res) {
+    res.render('pages/power-circle', {
+      title: 'Module 1 - Power Circle',
+      pageTitle: 'Power Circle',
+    });
+  }
+
+
+  static tailored_development(req, res) {
+    res.render('pages/tailored-development', {
+      title: 'Module 1 - Tailored Development',
+      pageTitle: 'Tailored Development',
     });
   }
 

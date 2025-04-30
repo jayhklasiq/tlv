@@ -25,4 +25,20 @@ router.get('/experience', (req, res) => {
   });
 });
 
+// Trailblazer page
+router.get('/trailblazer', (req, res) => {
+  res.render('pages/trailblazer', {
+    title: 'Trailblazer',
+    layout: 'layouts/layout'
+  });
+});
+
+//Impact page
+router.get('/impact', (req, res) => {
+  res.render('pages/impact', {
+    title: 'Impact',
+    layout: 'layouts/layout'
+  });
+});
+
 module.exports = router; 

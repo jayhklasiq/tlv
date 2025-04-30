@@ -2,7 +2,7 @@
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold">My Profile</h1>
     <button onclick="toggleEditMode()"
-      class="bg-white text-[#060147] px-4 py-2 rounded hover:bg-gray-200"> Edit
+      class="bg-white text-[#0c3030] px-4 py-2 rounded hover:bg-gray-200"> Edit
       Profile </button>
   </div>
   <% if (locals.success) { %>
@@ -29,7 +29,7 @@
     <% }); %>
   </div>
   <% } %>
-  <div class="bg-[#060147] p-8 rounded-lg shadow-lg">
+  <div class="bg-[#0c3030] p-8 rounded-lg shadow-lg">
     <form id="profileForm" action="/profile/update" method="POST"
       class="space-y-6" onsubmit="return validateForm()">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -94,7 +94,7 @@
       <!-- Save Changes Button (Hidden by default) -->
       <div id="saveChanges" class="hidden mt-6">
         <button type="submit"
-          class="w-full bg-white text-[#060147] px-6 py-3 rounded-lg font-semibold hover:bg-gray-200">
+          class="w-full bg-white text-[#0c3030] px-6 py-3 rounded-lg font-semibold hover:bg-gray-200">
           Save Changes </button>
       </div>
     </form>
