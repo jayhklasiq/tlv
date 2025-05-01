@@ -52,8 +52,8 @@ const connectDB = async () => {
 		console.log("Attempting to connect with extended timeouts...");
 		// Enhanced connection options
 		const options = {
-			serverSelectionTimeoutMS: 180000, // 3 minutes
-			socketTimeoutMS: 45000, // 45 seconds
+			serverSelectionTimeoutMS: 300000, // 5 minutes
+			socketTimeoutMS: 120000, // 2 minutes
 			connectTimeoutMS: 60000, // 60 seconds
 			retryWrites: true,
 			retryReads: true,
