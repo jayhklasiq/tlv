@@ -1,29 +1,32 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "PORT": "3000"
-  },
-  "rewrites": [
-    {
-      "source": "/css/(.*)",
-      "destination": "/src/public/css/$1"
-    },
-    {
-      "source": "/images/(.*)",
-      "destination": "/src/public/images/$1"
-    }
-  ]
+	"version": 2,
+	"builds": [
+		{
+			"src": "server.js",
+			"use": "@vercel/node"
+		},
+		{
+			"src": "src/views/**/*.ejs",
+			"use": "@vercel/static"
+		},
+		{
+			"src": "src/public/**/*",
+			"use": "@vercel/static"
+		}
+	],
+	"routes": [
+		{
+			"src": "/favicon.ico",
+			"dest": "/src/public/images/favicon.ico"
+		},
+		{
+			"src": "/webhook",
+			"methods": ["POST"],
+			"dest": "/server.js"
+		},
+		{
+			"src": "/.*",
+			"dest": "/server.js"
+		}
+	]
 }
