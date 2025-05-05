@@ -6,26 +6,28 @@ const { registerSuccessMessage } = require('../services/emailService');
 const PRICE_CONFIG = {
   1: {
     PC: {
-      amount: 50000, // $150 in cents for Stripe
+      // amount: 50000, // $150 in cents for Stripe
+      amount: 100,
       name: 'Leadership Voice Masterclass - Module 1 (PC)',
       maxParticipants: 10
     },
     TDE: {
-      amount: 100000, // $1000 in cents for Stripe
+      // amount: 100000, // $1000 in cents for Stripe
+      amount: 100,
       name: 'Leadership Voice Masterclass - Module 1 (TDE)',
       maxParticipants: 5
     }
   },
-  2: {
-    amount: 50000, // $500 in cents for Stripe
-    name: 'Leadership Voice Masterclass - Module 2',
-    maxParticipants: 10
-  },
-  3: {
-    amount: 50000, // $500 in cents for Stripe
-    name: 'Leadership Voice Masterclass - Module 3',
-    maxParticipants: 10
-  }
+  // 2: {
+  //   amount: 50000, // $500 in cents for Stripe
+  //   name: 'Leadership Voice Masterclass - Module 2',
+  //   maxParticipants: 10
+  // },
+  // 3: {
+  //   amount: 50000, // $500 in cents for Stripe
+  //   name: 'Leadership Voice Masterclass - Module 3',
+  //   maxParticipants: 10
+  // }
 };
 
 const createCheckoutSession = async (user) => {
