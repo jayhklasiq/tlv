@@ -134,7 +134,7 @@ const generatePaymentLinks = async (user) => {
     return {
       stripe: stripeSession.url,
       // We don't need to generate a PayPal link here as it's handled client-side
-      paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
+      // paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
     };
   } catch (error) {
     console.error('Payment link generation error:', error);

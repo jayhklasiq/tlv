@@ -6,7 +6,8 @@
 	<div class="bg-white rounded-xl shadow-2xl p-8 max-w-4xl mx-auto">
 		<h2 class="text-2xl font-bold text-gray-800 text-center mb-8">Complete your registration by choosing a payment method</h2>
 		<!-- Removed separate data attributes -->
-		<div class="grid md:grid-cols-2 gap-8">
+		<!-- <div class="grid md:grid-cols-2 gap-8"> -->
+		<div class="grid">
 			<!-- Stripe Payment Option -->
 			<div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg shadow-lg p-8 transform hover:scale-105 transition-transform duration-300">
 				<div class="flex items-center justify-center mb-6"></div>
@@ -29,8 +30,8 @@
 			};
 			console.log("User email for PayPal:", "<%= user.email %>");
 		</script>
-		<script src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID %>&buyer-country=US&currency=USD&components=buttons&disable-funding=venmo,paylater,card" data-sdk-integration-source="developer-studio"></script>
-		<script src="/javascript/paypal.js"></script>
+		<!-- <script src="https://www.paypal.com/sdk/js?client-id=<%= process.env.PAYPAL_CLIENT_ID %>&buyer-country=US&currency=USD&components=buttons&disable-funding=venmo,paylater,card" data-sdk-integration-source="developer-studio"></script>
+		<script src="/javascript/paypal.js"></script> -->
 	</div>
 	<%- include(`${moduleTemplate}`) %>
 </div>
