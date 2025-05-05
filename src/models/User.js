@@ -102,6 +102,10 @@ const userSchema = new mongoose.Schema({
       const date = new Date();
       return date.setHours(date.getHours() + 48); // 45 hours from login
     }
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
 });
 

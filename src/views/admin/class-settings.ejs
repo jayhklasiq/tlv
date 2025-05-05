@@ -1,0 +1,245 @@
+<%- include('../partials/header') %>
+
+<div class="container mx-auto my-4 p-4">
+	<h1 class="text-3xl font-bold mb-6">Manage Class Settings</h1>
+
+	<% if (success) { %>
+	<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4 rounded"><%= success %></div>
+	<% } %> <% if (error) { %>
+	<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mb-4 rounded"><%= error %></div>
+	<% } %>
+
+	<div class="mb-6">
+		<button id="addNewBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Add New Class Setting</button>
+	</div>
+
+	<!-- Class Settings Table -->
+	<div class="bg-white rounded shadow overflow-x-auto">
+		<table class="min-w-full">
+			<thead>
+				<tr class="bg-gray-200 text-gray-700">
+					<th class="px-4 py-2">Module</th>
+					<th class="px-4 py-2">Program Type</th>
+					<th class="px-4 py-2">Display Price ($)</th>
+					<th class="px-4 py-2">Stripe Price ($)</th>
+					<th class="px-4 py-2">PayPal Price ($)</th>
+					<th class="px-4 py-2">Start Date</th>
+					<th class="px-4 py-2">End Date</th>
+					<th class="px-4 py-2">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<% classSettings.forEach(setting => { %>
+				<tr class="border-b hover:bg-gray-50">
+					<td class="px-4 py-2"><%= setting.moduleName %> (Module <%= setting.moduleNumber %>)</td>
+					<td class="px-4 py-2"><%= setting.programType || 'Standard' %></td>
+					<td class="px-4 py-2">$<%= setting.price %></td>
+					<td class="px-4 py-2">$<%= (setting.stripePrice / 100).toFixed(2) %></td>
+					<td class="px-4 py-2">$<%= setting.paypalPrice %></td>
+					<td class="px-4 py-2"><%= new Date(setting.startDate).toLocaleDateString() %></td>
+					<td class="px-4 py-2"><%= new Date(setting.endDate).toLocaleDateString() %></td>
+					<td class="px-4 py-2">
+						<button
+							class="edit-btn bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded mr-1"
+							data-id="<%= setting._id %>"
+							data-module-number="<%= setting.moduleNumber %>"
+							data-module-name="<%= setting.moduleName %>"
+							data-program-type="<%= setting.programType %>"
+							data-price="<%= setting.price %>"
+							data-stripe-price="<%= (setting.stripePrice / 100).toFixed(2) %>"
+							data-paypal-price="<%= setting.paypalPrice %>"
+							data-start-date="<%= setting.startDate.toISOString().split('T')[0] %>"
+							data-end-date="<%= setting.endDate.toISOString().split('T')[0] %>"
+							data-course1-date="<%= setting.course1Date.toISOString().split('T')[0] %>"
+							data-course2-date="<%= setting.course2Date.toISOString().split('T')[0] %>"
+							data-course3-date="<%= setting.course3Date.toISOString().split('T')[0] %>"
+						>
+							Edit
+						</button>
+						<a href="/admin/class-settings/delete/<%= setting._id %>" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded" onclick="return confirm('Are you sure you want to delete this setting?')"> Delete </a>
+					</td>
+				</tr>
+				<% }) %>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- Modal for Adding/Editing Class Settings -->
+	<div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style="display: none">
+		<div class="bg-white rounded-lg p-6 w-full max-w-2xl">
+			<h2 id="modalTitle" class="text-2xl font-bold mb-4">Add New Class Setting</h2>
+
+			<form action="/admin/class-settings" method="POST">
+				<input type="hidden" id="settingId" name="id" />
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+					<div>
+						<label class="block text-gray-700 mb-1">Module Number</label>
+						<select id="moduleNumber" name="moduleNumber" class="w-full px-3 py-2 border rounded" required>
+							<option value="1">Module 1</option>
+							<option value="2">Module 2</option>
+							<option value="3">Module 3</option>
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Module Name</label>
+						<input type="text" id="moduleName" name="moduleName" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Program Type</label>
+						<select id="programType" name="programType" class="w-full px-3 py-2 border rounded">
+							<option value="">Standard</option>
+							<option value="PC">Power Circle (PC)</option>
+							<option value="TDE">Tailored Development Experience (TDE)</option>
+						</select>
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Display Price ($)</label>
+						<input type="number" id="price" name="price" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Stripe Price ($)</label>
+						<input type="number" id="stripePrice" name="stripePrice" step="0.01" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">PayPal Price ($)</label>
+						<input type="number" id="paypalPrice" name="paypalPrice" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Max Participants</label>
+						<input type="number" id="maxParticipants" name="maxParticipants" class="w-full px-3 py-2 border rounded" required />
+					</div>
+				</div>
+
+				<h3 class="text-xl font-bold mb-2">Class Dates</h3>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+					<div>
+						<label class="block text-gray-700 mb-1">Start Date</label>
+						<input type="date" id="startDate" name="startDate" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">End Date</label>
+						<input type="date" id="endDate" name="endDate" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Course 1 Date</label>
+						<input type="date" id="course1Date" name="course1Date" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Course 2 Date</label>
+						<input type="date" id="course2Date" name="course2Date" class="w-full px-3 py-2 border rounded" required />
+					</div>
+
+					<div>
+						<label class="block text-gray-700 mb-1">Course 3 Date</label>
+						<input type="date" id="course3Date" name="course3Date" class="w-full px-3 py-2 border rounded" required />
+					</div>
+				</div>
+
+				<div class="flex justify-end gap-2 mt-4">
+					<button type="button" id="cancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancel</button>
+					<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Save</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		// JavaScript for modal functionality
+		document.addEventListener("DOMContentLoaded", function () {
+			const modal = document.getElementById("settingsModal");
+			const addNewBtn = document.getElementById("addNewBtn");
+			const cancelBtn = document.getElementById("cancelBtn");
+			const editBtns = document.querySelectorAll(".edit-btn");
+			const modalTitle = document.getElementById("modalTitle");
+			const settingIdInput = document.getElementById("settingId");
+			const moduleNumberInput = document.getElementById("moduleNumber");
+			const moduleNameInput = document.getElementById("moduleName");
+			const programTypeInput = document.getElementById("programType");
+			const priceInput = document.getElementById("price");
+			const stripePriceInput = document.getElementById("stripePrice");
+			const paypalPriceInput = document.getElementById("paypalPrice");
+			const maxParticipantsInput = document.getElementById("maxParticipants");
+			const startDateInput = document.getElementById("startDate");
+			const endDateInput = document.getElementById("endDate");
+			const course1DateInput = document.getElementById("course1Date");
+			const course2DateInput = document.getElementById("course2Date");
+			const course3DateInput = document.getElementById("course3Date");
+
+			// Open modal for adding new setting
+			addNewBtn.addEventListener("click", function () {
+				modalTitle.textContent = "Add New Class Setting";
+				settingIdInput.value = "";
+				moduleNumberInput.value = "1";
+				moduleNameInput.value = "Foundations of Leadership Communication";
+				programTypeInput.value = "";
+				priceInput.value = "500";
+				stripePriceInput.value = "500";
+				paypalPriceInput.value = "500";
+				maxParticipantsInput.value = "10";
+
+				const today = new Date();
+				const futureDate = new Date(today);
+				futureDate.setMonth(futureDate.getMonth() + 1);
+
+				startDateInput.value = formatDate(futureDate);
+
+				futureDate.setDate(futureDate.getDate() + 2);
+				endDateInput.value = formatDate(futureDate);
+
+				course1DateInput.value = startDateInput.value;
+				course2DateInput.value = formatDate(new Date(futureDate.setDate(futureDate.getDate() - 1)));
+				course3DateInput.value = endDateInput.value;
+
+				modal.classList.remove("hidden");
+			});
+
+			// Open modal for editing existing setting
+			editBtns.forEach((btn) => {
+				btn.addEventListener("click", function () {
+					modalTitle.textContent = "Edit Class Setting";
+
+					settingIdInput.value = this.dataset.id;
+					moduleNumberInput.value = this.dataset.moduleNumber;
+					moduleNameInput.value = this.dataset.moduleName;
+					programTypeInput.value = this.dataset.programType;
+					priceInput.value = this.dataset.price;
+					stripePriceInput.value = this.dataset.stripePrice;
+					paypalPriceInput.value = this.dataset.paypalPrice;
+					startDateInput.value = this.dataset.startDate;
+					endDateInput.value = this.dataset.endDate;
+					course1DateInput.value = this.dataset.course1Date;
+					course2DateInput.value = this.dataset.course2Date;
+					course3DateInput.value = this.dataset.course3Date;
+
+					modal.classList.remove("hidden");
+				});
+			});
+
+			// Close modal
+			cancelBtn.addEventListener("click", function () {
+				modal.classList.add("hidden");
+			});
+
+			// Format date for inputs
+			function formatDate(date) {
+				const year = date.getFullYear();
+				const month = String(date.getMonth() + 1).padStart(2, "0");
+				const day = String(date.getDate()).padStart(2, "0");
+				return `${year}-${month}-${day}`;
+			}
+		});
+	</script>
+</div>
+
+<%- include('../partials/footer') %>

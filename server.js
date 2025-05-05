@@ -127,6 +127,10 @@ const registerRoutes = require('./src/routes/registerRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
 const paypalRoutes = require('./src/routes/paypalRoutes');
 
+// Import the admin routes
+const adminRoutes = require('./src/routes/adminRoutes');
+
+
 app.use('/', homeRoutes);
 app.use('/about', aboutRoutes);
 app.use('/contact', contactRoutes);
@@ -134,6 +138,9 @@ app.use('/program', moduleRoutes);
 app.use('/register', registerRoutes);
 app.use('/profile', profileRoutes);
 app.use('/api', paypalRoutes);
+
+// Add the admin routes
+app.use('/admin', adminRoutes);
 
 // Add a route for payment errors
 app.get('/payment-error', (req, res) => {

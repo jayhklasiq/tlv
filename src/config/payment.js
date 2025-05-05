@@ -1,40 +1,75 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
 const { registerSuccessMessage } = require('../services/emailService');
+const ClassSettings = require('../models/ClassSettings');
 
-
-const PRICE_CONFIG = {
-  1: {
-    PC: {
-      amount: 50000, // $150 in cents for Stripe
-      name: 'Leadership Voice Masterclass - Module 1 (PC)',
-      maxParticipants: 10
-    },
-    TDE: {
-      amount: 100000, // $1000 in cents for Stripe
-      name: 'Leadership Voice Masterclass - Module 1 (TDE)',
-      maxParticipants: 5
-    }
-  },
-  2: {
-    amount: 50000, // $500 in cents for Stripe
-    name: 'Leadership Voice Masterclass - Module 2',
-    maxParticipants: 10
-  },
-  3: {
-    amount: 50000, // $500 in cents for Stripe
-    name: 'Leadership Voice Masterclass - Module 3',
-    maxParticipants: 10
+// Replace the hardcoded PRICE_CONFIG with a function that fetches from the database
+const getPriceConfig = async () => {
+  try {
+    const classSettings = await ClassSettings.find();
+    const priceConfig = {};
+    
+    classSettings.forEach(setting => {
+      if (setting.moduleNumber === 1) {
+        if (!priceConfig[1]) {
+          priceConfig[1] = {};
+        }
+        if (setting.programType) {
+          priceConfig[1][setting.programType] = {
+            amount: setting.stripePrice,
+            name: `Leadership Voice Masterclass - Module 1 (${setting.programType})`,
+            maxParticipants: setting.maxParticipants
+          };
+        }
+      } else {
+        priceConfig[setting.moduleNumber] = {
+          amount: setting.stripePrice,
+          name: `Leadership Voice Masterclass - Module ${setting.moduleNumber}`,
+          maxParticipants: setting.maxParticipants
+        };
+      }
+    });
+    
+    return priceConfig;
+  } catch (error) {
+    console.error('Error fetching price config:', error);
+    // Return default config if database fetch fails
+    return {
+      1: {
+        PC: {
+          amount: 50000,
+          name: 'Leadership Voice Masterclass - Module 1 (PC)',
+          maxParticipants: 10
+        },
+        TDE: {
+          amount: 100000,
+          name: 'Leadership Voice Masterclass - Module 1 (TDE)',
+          maxParticipants: 5
+        }
+      },
+      2: {
+        amount: 50000,
+        name: 'Leadership Voice Masterclass - Module 2',
+        maxParticipants: 10
+      },
+      3: {
+        amount: 50000,
+        name: 'Leadership Voice Masterclass - Module 3',
+        maxParticipants: 10
+      }
+    };
   }
 };
 
 const createCheckoutSession = async (user) => {
+  const priceConfig = await getPriceConfig();
+  
   const moduleNumber = user.moduleNumber;
   const programType = user.programType;
 
-  let priceConfig = PRICE_CONFIG[moduleNumber];
+  let moduleConfig = priceConfig[moduleNumber];
   if (moduleNumber === 1) {
-    priceConfig = priceConfig[programType];
+    moduleConfig = moduleConfig[programType];
   }
 
   const session = await stripe.checkout.sessions.create({
@@ -44,10 +79,10 @@ const createCheckoutSession = async (user) => {
         price_data: {
           currency: 'usd',
           product_data: {
-            name: priceConfig.name,
+            name: moduleConfig.name,
             description: `Registration for ${user.firstName} ${user.lastName}`
           },
-          unit_amount: priceConfig.amount
+          unit_amount: moduleConfig.amount
         },
         quantity: 1
       }

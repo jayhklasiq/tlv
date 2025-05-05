@@ -1,0 +1,133 @@
+<%- include('../partials/header') %>
+
+<div class="container mx-auto my-4 p-4">
+  <h1 class="text-3xl font-bold mb-6">Manage User Enrollments</h1>
+  
+  <% if (error) { %>
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mb-4 rounded">
+      <%= error %>
+    </div>
+  <% } %>
+  
+  <!-- Filter Controls -->
+  <div class="bg-white p-4 rounded shadow mb-6">
+    <div class="flex flex-wrap gap-4">
+      <div>
+        <label class="block text-gray-700 mb-1">Module</label>
+        <select id="moduleFilter" class="px-3 py-2 border rounded">
+          <option value="">All Modules</option>
+          <option value="1">Module 1</option>
+          <option value="2">Module 2</option>
+          <option value="3">Module 3</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-gray-700 mb-1">Program Type</label>
+        <select id="programTypeFilter" class="px-3 py-2 border rounded">
+          <option value="">All Types</option>
+          <option value="PC">Power Circle (PC)</option>
+          <option value="TDE">Tailored Development (TDE)</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-gray-700 mb-1">Payment Status</label>
+        <select id="paymentStatusFilter" class="px-3 py-2 border rounded">
+          <option value="">All Statuses</option>
+          <option value="completed">Paid</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+      
+      <div>
+        <label class="block text-gray-700 mb-1">Country</label>
+        <select id="countryFilter" class="px-3 py-2 border rounded">
+          <option value="">All Countries</option>
+          <% 
+            const countries = [...new Set(users.map(u => u.country))].sort();
+            countries.forEach(country => {
+          %>
+            <option value="<%= country %>"><%= country %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Enrollments Table -->
+  <div class="bg-white rounded shadow overflow-x-auto">
+    <table class="min-w-full" id="enrollmentsTable">
+      <thead>
+        <tr class="bg-gray-200 text-gray-700">
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Email</th>
+          <th class="px-4 py-2">Module</th>
+          <th class="px-4 py-2">Program Type</th>
+          <th class="px-4 py-2">Country</th>
+          <th class="px-4 py-2">Registration Date</th>
+          <th class="px-4 py-2">Payment Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <tr class="border-b hover:bg-gray-50" 
+              data-module="<%= user.moduleNumber %>" 
+              data-program-type="<%= user.programType || '' %>"
+              data-payment-status="<%= user.paymentStatus %>"
+              data-country="<%= user.country %>">
+            <td class="px-4 py-2"><%= user.firstName %> <%= user.lastName %></td>
+            <td class="px-4 py-2"><%= user.email %></td>
+            <td class="px-4 py-2">Module <%= user.moduleNumber %></td>
+            <td class="px-4 py-2"><%= user.programType || 'Standard' %></td>
+            <td class="px-4 py-2"><%= user.country %></td>
+            <td class="px-4 py-2"><%= new Date(user.registrationDate).toLocaleDateString() %></td>
+            <td class="px-4 py-2">
+              <span class="<%= user.paymentStatus === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %> px-2 py-1 rounded text-sm">
+                <%= user.paymentStatus === 'completed' ? 'Paid' : 'Pending' %>
+              </span>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  
+  <script>
+    // JavaScript for filtering functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const moduleFilter = document.getElementById('moduleFilter');
+      const programTypeFilter = document.getElementById('programTypeFilter');
+      const paymentStatusFilter = document.getElementById('paymentStatusFilter');
+      const countryFilter = document.getElementById('countryFilter');
+      const rows = document.querySelectorAll('#enrollmentsTable tbody tr');
+      
+      // Apply filters when any filter changes
+      [moduleFilter, programTypeFilter, paymentStatusFilter, countryFilter].forEach(filter => {
+        filter.addEventListener('change', applyFilters);
+      });
+      
+      function applyFilters() {
+        const moduleValue = moduleFilter.value;
+        const programTypeValue = programTypeFilter.value;
+        const paymentStatusValue = paymentStatusFilter.value;
+        const countryValue = countryFilter.value;
+        
+        rows.forEach(row => {
+          const moduleMatch = !moduleValue || row.dataset.module === moduleValue;
+          const programTypeMatch = !programTypeValue || row.dataset.programType === programTypeValue;
+          const paymentStatusMatch = !paymentStatusValue || row.dataset.paymentStatus === paymentStatusValue;
+          const countryMatch = !countryValue || row.dataset.country === countryValue;
+          
+          if (moduleMatch && programTypeMatch && paymentStatusMatch && countryMatch) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      }
+    });
+  </script>
+</div>
+
+<%- include('../partials/footer') %>

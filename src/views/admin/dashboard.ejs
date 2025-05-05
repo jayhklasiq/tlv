@@ -1,0 +1,36 @@
+<div class="container mx-auto my-4 p-4">
+	<h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+
+	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+		<div class="bg-white p-4 rounded shadow">
+			<h2 class="text-xl font-semibold mb-2">Total Users</h2>
+			<p class="text-3xl font-bold text-blue-600"><%= totalUsers %></p>
+		</div>
+
+		<div class="bg-white p-4 rounded shadow">
+			<h2 class="text-xl font-semibold mb-2">Paid Users</h2>
+			<p class="text-3xl font-bold text-green-600"><%= paidUsers %></p>
+		</div>
+
+		<div class="bg-white p-4 rounded shadow">
+			<h2 class="text-xl font-semibold mb-2">Conversion Rate</h2>
+			<p class="text-3xl font-bold text-purple-600"><%= totalUsers ? Math.round((paidUsers / totalUsers) * 100) : 0 %>%</p>
+		</div>
+	</div>
+
+	<div class="flex mb-4">
+		<h2 class="text-2xl font-bold">Quick Actions</h2>
+	</div>
+
+	<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+		<a href="/admin/class-settings" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded text-center">
+			<h3 class="text-xl font-semibold">Manage Class Settings</h3>
+			<p class="mt-2">Update class prices and schedules</p>
+		</a>
+
+		<a href="/admin/enrollments" class="bg-green-600 hover:bg-green-700 text-white p-4 rounded text-center">
+			<h3 class="text-xl font-semibold">Manage Enrollments</h3>
+			<p class="mt-2">View and manage user enrollments</p>
+		</a>
+	</div>
+</div>
