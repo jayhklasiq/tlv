@@ -30,7 +30,7 @@ const PRICE_CONFIG = {
 
 const createCheckoutSession = async (user) => {
   const priceConfig = await getPriceConfig();
-  
+
   const moduleNumber = user.moduleNumber;
   const programType = user.programType;
 
@@ -94,14 +94,14 @@ const handleSuccessfulPayment = async (session) => {
       },
       { new: true }
     );
-    
+
     // Send notification email to admin
     await sendPaymentNotification(updatedUserData, {
       paymentMethod: 'stripe',
       paymentReference: session.id,
-      amount: session.amount_total || updatedUserData.moduleNumber === 1 && updatedUserData.programType === 'TDE' ? 100000 : 50000
+      amount: session.amount_total || (updatedUserData.moduleNumber === 1 && updatedUserData.programType === 'TDE' ? 100000 : 50000)
     });
-    
+
     // console.log('Updated user payment status:', updatedUser);
   } catch (error) {
     console.error('Error updating user payment status:', error);
