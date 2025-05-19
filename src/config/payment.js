@@ -81,15 +81,10 @@ const handleSuccessfulPayment = async (session) => {
     const email = updatedUser.email;
     const username = updatedUser.firstName;
     const programType = updatedUser.programType;
-    // Send email to registrant
-    const email = updatedUser.email;
-    const username = updatedUser.firstName;
-    const programType = updatedUser.programType;
 
     await registerSuccessMessage(email, username, programType);
 
     // Update user information
-    const updatedUserData = await User.findByIdAndUpdate(
     const updatedUserData = await User.findByIdAndUpdate(
       userId,
       {
@@ -148,7 +143,6 @@ const generatePaymentLinks = async (user) => {
     return {
       stripe: stripeSession.url,
       // We don't need to generate a PayPal link here as it's handled client-side
-      // paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
       // paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
     };
   } catch (error) {
