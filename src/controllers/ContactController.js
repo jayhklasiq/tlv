@@ -1,4 +1,5 @@
 const Contact = require('../models/Contact');
+const { sendContactFormEmail, sendContactConfirmation } = require('../services/emailService');
 
 class ContactController {
   static index(req, res) {
@@ -34,15 +35,11 @@ class ContactController {
         });
       }
 
-      // Create new contact message
-      const contact = new Contact({
-        name,
-        email,
-        message
-      });
+      // Send email instead of saving to database
+      await sendContactFormEmail(name, email, message);
 
-      // Save to database
-      await contact.save();
+      // Send confirmation to the user
+      await sendContactConfirmation(name, email);
 
       // Redirect with success message
       res.redirect('/contact?success=true');
@@ -50,7 +47,7 @@ class ContactController {
     } catch (error) {
       console.error('Contact form error:', error);
       errors.push('An error occurred while sending your message. Please try again.');
-      
+
       res.render('pages/contact', {
         title: 'Contact Us',
         pageTitle: 'Get in Touch',
@@ -60,4 +57,4 @@ class ContactController {
   }
 }
 
-module.exports = ContactController; 
+module.exports = ContactController;

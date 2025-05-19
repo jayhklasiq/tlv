@@ -1,6 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
-const { registerSuccessMessage } = require('../services/emailService');
+const { registerSuccessMessage, sendPaymentNotification } = require('../services/emailService');
 
 
 const PRICE_CONFIG = {
@@ -74,15 +74,15 @@ const handleSuccessfulPayment = async (session) => {
   try {
     const updatedUser = await User.findById(userId);
 
-    // // Determine the new account expiry based on payment status
-    const email = updatedUser.email
-    const username = updatedUser.firstName
-    const programType = updatedUser.programType
+    // Send email to registrant
+    const email = updatedUser.email;
+    const username = updatedUser.firstName;
+    const programType = updatedUser.programType;
 
     await registerSuccessMessage(email, username, programType);
 
     // Update user information
-    await User.findByIdAndUpdate(
+    const updatedUserData = await User.findByIdAndUpdate(
       userId,
       {
         paymentStatus: 'completed',
@@ -92,6 +92,14 @@ const handleSuccessfulPayment = async (session) => {
       },
       { new: true }
     );
+    
+    // Send notification email to admin
+    await sendPaymentNotification(updatedUserData, {
+      paymentMethod: 'stripe',
+      paymentReference: session.id,
+      amount: session.amount_total || updatedUserData.moduleNumber === 1 && updatedUserData.programType === 'TDE' ? 100000 : 50000
+    });
+    
     // console.log('Updated user payment status:', updatedUser);
   } catch (error) {
     console.error('Error updating user payment status:', error);
