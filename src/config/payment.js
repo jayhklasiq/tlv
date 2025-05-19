@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
 const { registerSuccessMessage, sendPaymentNotification } = require('../services/emailService');
+const { registerSuccessMessage, sendPaymentNotification } = require('../services/emailService');
 
 
 const PRICE_CONFIG = {
@@ -16,16 +17,16 @@ const PRICE_CONFIG = {
       maxParticipants: 5
     }
   },
-  2: {
-    amount: 50000, // $500 in cents for Stripe
-    name: 'Leadership Voice Masterclass - Module 2',
-    maxParticipants: 10
-  },
-  3: {
-    amount: 50000, // $500 in cents for Stripe
-    name: 'Leadership Voice Masterclass - Module 3',
-    maxParticipants: 10
-  }
+  // 2: {
+  //   amount: 50000, // $500 in cents for Stripe
+  //   name: 'Leadership Voice Masterclass - Module 2',
+  //   maxParticipants: 10
+  // },
+  // 3: {
+  //   amount: 50000, // $500 in cents for Stripe
+  //   name: 'Leadership Voice Masterclass - Module 3',
+  //   maxParticipants: 10
+  // }
 };
 
 const createCheckoutSession = async (user) => {
@@ -80,10 +81,15 @@ const handleSuccessfulPayment = async (session) => {
     const email = updatedUser.email;
     const username = updatedUser.firstName;
     const programType = updatedUser.programType;
+    // Send email to registrant
+    const email = updatedUser.email;
+    const username = updatedUser.firstName;
+    const programType = updatedUser.programType;
 
     await registerSuccessMessage(email, username, programType);
 
     // Update user information
+    const updatedUserData = await User.findByIdAndUpdate(
     const updatedUserData = await User.findByIdAndUpdate(
       userId,
       {
@@ -142,6 +148,7 @@ const generatePaymentLinks = async (user) => {
     return {
       stripe: stripeSession.url,
       // We don't need to generate a PayPal link here as it's handled client-side
+      // paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
       // paypal: '#' // This is a placeholder, the actual PayPal flow is handled by the PayPal SDK
     };
   } catch (error) {
