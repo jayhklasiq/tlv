@@ -173,4 +173,139 @@ const registerSuccessMessage = async (email, username, programType) => {
   return await transporter.sendMail(mailOptions);
 }
 
-module.exports = { sendVerificationCode, registerSuccessMessage };
+const sendContactFormEmail = async (name, email, message) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: 'info@tlvmasterclass.com',
+    subject: 'New Contact Form Submission',
+    replyTo: email,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center;">
+          <h1 style="color: #fcb900; margin: 0; font-size: 24px;">The Leadership Voice</h1>
+        </div>
+        
+        <div style="padding: 20px; background-color: #ffffff;">
+          <p style="color: #4c42ff; font-size: 20px; font-weight: bold; margin-bottom: 15px;">New Contact Form Submission</p>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Sender Information:</p>
+            <p style="margin: 10px 0 0 0;"><strong>Name:</strong> ${name}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Email:</strong> ${email}</p>
+          </div>
+          
+          <div style="margin: 20px 0;">
+            <p style="color: #0c3030; font-weight: bold; margin-bottom: 10px;">Message:</p>
+            <p style="margin: 0; white-space: pre-wrap;">${message}</p>
+          </div>
+        </div>
+
+        <div style="background-color: #0c3030; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
+          <p style="margin: 0;">© 2024 The Leadership Voice. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
+};
+
+const sendContactConfirmation = async (name, email) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Thanks for Contacting The Leadership Voice',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center;">
+          <h1 style="color: #fcb900; margin: 0; font-size: 24px;">The Leadership Voice</h1>
+        </div>
+        
+        <div style="padding: 20px; background-color: #ffffff;">
+          <p style="color: #0c3030; font-size: 18px; margin-bottom: 20px;">Dear ${name},</p>
+          
+          <p style="margin-bottom: 15px;">Thank you for reaching out to The Leadership Voice. We have received your message and will respond as soon as possible.</p>
+          
+          <p style="margin: 20px 0;">Warm regards,<br>
+          <span style="color: #4c42ff;">The Leadership Voice Team</span></p>
+        </div>
+
+        <div style="background-color: #0c3030; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
+          <p style="margin: 0;">© 2024 The Leadership Voice. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
+};
+
+const sendPaymentNotification = async (user, paymentDetails) => {
+  const { paymentMethod, paymentReference, amount } = paymentDetails;
+
+  const moduleTypes = {
+    1: "Foundations of Leadership Communication",
+    2: "Advanced Leadership Communication",
+    3: "Leadership Communication Mastery"
+  };
+
+  const moduleName = moduleTypes[user.moduleNumber] || `Module ${user.moduleNumber}`;
+  const programTypeDisplay = user.programType === 'PC' ? 'Power Circle' :
+    user.programType === 'TDE' ? 'Tailored Development Experience' :
+      'Standard';
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: 'info@tlvmasterclass.com',
+    subject: `New Payment: ${user.firstName} ${user.lastName} - ${moduleName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <div style="background-color: #0c3030; padding: 20px; text-align: center;">
+          <h1 style="color: #fcb900; margin: 0; font-size: 24px;">The Leadership Voice</h1>
+        </div>
+        
+        <div style="padding: 20px; background-color: #ffffff;">
+          <p style="color: #4c42ff; font-size: 20px; font-weight: bold; margin-bottom: 15px;">New Payment Received</p>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-left: 4px solid #4c42ff;">
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Payment Details:</p>
+            <p style="margin: 10px 0 0 0;"><strong>Amount:</strong> $${(amount / 100).toFixed(2)} USD</p>
+            <p style="margin: 5px 0 0 0;"><strong>Method:</strong> ${paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Reference:</strong> ${paymentReference}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+          </div>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-left: 4px solid #fcb900;">
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Program Information:</p>
+            <p style="margin: 10px 0 0 0;"><strong>Module:</strong> ${moduleName}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Program Type:</strong> ${programTypeDisplay}</p>
+          </div>
+          
+          <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-left: 4px solid #0c3030;">
+            <p style="margin: 0; color: #0c3030; font-weight: bold;">Customer Information:</p>
+            <p style="margin: 10px 0 0 0;"><strong>Name:</strong> ${user.firstName} ${user.lastName}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Email:</strong> ${user.email}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Phone:</strong> ${user.phone}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Company:</strong> ${user.company}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Role:</strong> ${user.role}</p>
+            <p style="margin: 5px 0 0 0;"><strong>Country:</strong> ${user.country}</p>
+          </div>
+        </div>
+
+        <div style="background-color: #0c3030; padding: 20px; text-align: center; color: #ffffff; font-size: 12px;">
+          <p style="margin: 0;">© 2024 The Leadership Voice. All rights reserved.</p>
+        </div>
+      </div>
+    `
+  };
+
+  return await transporter.sendMail(mailOptions);
+};
+
+module.exports = {
+  sendVerificationCode,
+  registerSuccessMessage,
+  sendContactFormEmail,
+  sendContactConfirmation,
+  sendPaymentNotification
+};
