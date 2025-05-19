@@ -2,7 +2,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
 const { registerSuccessMessage, sendPaymentNotification } = require('../services/emailService');
 
-
 const PRICE_CONFIG = {
   1: {
     PC: {
