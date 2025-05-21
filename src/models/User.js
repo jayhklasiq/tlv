@@ -4,14 +4,12 @@ const userSchema = new mongoose.Schema({
   moduleNumber: {
     type: Number,
     required: true,
-    enum: [1, 2, 3]
+    enum: [1]
   },
   programType: {
     type: String,
     enum: ['PC', 'TDE'],
-    required: function () {
-      return this.moduleNumber === 1;
-    }
+    required: true
   },
   firstName: {
     type: String,
@@ -78,7 +76,18 @@ const userSchema = new mongoose.Schema({
   paymentStatus: {
     type: String,
     enum: ['pending', 'completed'],
-    default: 'pending'
+    default: 'pending',
+    required: true
+  },
+  isConfirmed: {
+    type: Boolean,
+    default: false,
+    validate: {
+      validator: function (v) {
+        return !v || (v && this.paymentStatus === 'completed');
+      },
+      message: 'User can only be confirmed when payment status is completed'
+    }
   },
   accountExpiry: {
     type: Date,
@@ -107,6 +116,17 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   }
+});
+
+userSchema.pre('save', function (next) {
+  if (this.isModified('paymentStatus')) {
+    if (this.paymentStatus === 'completed') {
+      this.isConfirmed = true;
+    } else {
+      this.isConfirmed = false;
+    }
+  }
+  next();
 });
 
 module.exports = mongoose.model('User', userSchema);

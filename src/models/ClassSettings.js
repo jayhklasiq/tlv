@@ -3,16 +3,18 @@ const mongoose = require('mongoose');
 const classSettingsSchema = new mongoose.Schema({
   moduleNumber: {
     type: Number,
-    required: true
+    required: true,
+    enum: [1]  // Only allow Module 1
   },
   moduleName: {
     type: String,
-    required: true
+    required: true,
+    default: 'Foundations of Leadership Communication'
   },
   programType: {
     type: String,
-    enum: ['PC', 'TDE', null],
-    default: null
+    enum: ['PC', 'TDE'],
+    required: true
   },
   price: {
     type: Number,
@@ -61,7 +63,7 @@ const classSettingsSchema = new mongoose.Schema({
 });
 
 // Add timestamps when the document is updated
-classSettingsSchema.pre('findOneAndUpdate', function() {
+classSettingsSchema.pre('findOneAndUpdate', function () {
   this.set({ updatedAt: new Date() });
 });
 
@@ -97,40 +99,12 @@ const initializeDefaultSettings = async () => {
           maxParticipants: 5,
           startDate: new Date('2025-05-29'),
           endDate: new Date('2025-05-31'),
-          course1Date: new Date('2025-05-29'),
-          course2Date: new Date('2025-05-30'),
-          course3Date: new Date('2025-05-31')
-        },
-        {
-          moduleNumber: 2,
-          moduleName: 'Advanced Leadership Communication',
-          programType: null,
-          price: 500,
-          stripePrice: 50000,
-          paypalPrice: 500,
-          maxParticipants: 10,
-          startDate: new Date('2025-06-29'),
-          endDate: new Date('2025-06-30'),
-          course1Date: new Date('2025-06-29T14:00:00Z'),
-          course2Date: new Date('2025-06-30T14:00:00Z'),
-          course3Date: new Date('2025-06-30T16:00:00Z')
-        },
-        {
-          moduleNumber: 3,
-          moduleName: 'Leadership Communication Mastery',
-          programType: null,
-          price: 500,
-          stripePrice: 50000,
-          paypalPrice: 500,
-          maxParticipants: 10,
-          startDate: new Date('2025-07-29'),
-          endDate: new Date('2025-07-31'),
-          course1Date: new Date('2025-07-29T14:00:00Z'),
-          course2Date: new Date('2025-07-30T14:00:00Z'),
-          course3Date: new Date('2025-07-31T14:00:00Z')
+          course1Date: new Date('2025-05-29T14:00:00Z'),
+          course2Date: new Date('2025-05-30T14:00:00Z'),
+          course3Date: new Date('2025-05-31T14:00:00Z')
         }
       ];
-      
+
       await ClassSettings.insertMany(defaults);
     }
   } catch (error) {

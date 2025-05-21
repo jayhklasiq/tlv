@@ -1,8 +1,9 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../models/User');
+const ClassSettings = require('../models/ClassSettings');
 const { registerSuccessMessage, sendPaymentNotification } = require('../services/emailService');
 
-const PRICE_CONFIG = {
+const getPriceConfig = {
   1: {
     PC: {
       amount: 50000, // $150 in cents for Stripe
@@ -28,12 +29,10 @@ const PRICE_CONFIG = {
 };
 
 const createCheckoutSession = async (user) => {
-  const priceConfig = await getPriceConfig();
-
   const moduleNumber = user.moduleNumber;
   const programType = user.programType;
 
-  let moduleConfig = priceConfig[moduleNumber];
+  let moduleConfig = getPriceConfig[moduleNumber];
   if (moduleNumber === 1) {
     moduleConfig = moduleConfig[programType];
   }
@@ -73,12 +72,15 @@ const createCheckoutSession = async (user) => {
 const handleSuccessfulPayment = async (session) => {
   const { userId } = session.metadata;
   try {
-    const updatedUser = await User.findById(userId);
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-    // Send email to registrant
-    const email = updatedUser.email;
-    const username = updatedUser.firstName;
-    const programType = updatedUser.programType;
+    // Process the payment
+    const email = user.email;
+    const username = user.firstName;
+    const programType = user.programType;
 
     await registerSuccessMessage(email, username, programType);
 
@@ -101,7 +103,6 @@ const handleSuccessfulPayment = async (session) => {
       amount: session.amount_total || (updatedUserData.moduleNumber === 1 && updatedUserData.programType === 'TDE' ? 100000 : 50000)
     });
 
-    // console.log('Updated user payment status:', updatedUser);
   } catch (error) {
     console.error('Error updating user payment status:', error);
     throw error;

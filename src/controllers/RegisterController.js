@@ -1,31 +1,49 @@
 const User = require('../models/User');
 const { generatePaymentLinks } = require('../config/payment');
 const CountryRegistration = require('../models/CountryRegistration');
+const ClassSettings = require('../models/ClassSettings');
 
 class RegisterController {
   // Reusable function for availability logic
-  static async getAvailability(country, moduleNumber, programType) {
-    const countryReg = await CountryRegistration.findOne({
-      country: country,
-      moduleNumber: parseInt(moduleNumber),
-      programType: moduleNumber === '1' ? programType : 'PC'
-    });
-    const maxParticipants = moduleNumber === '1' && programType === 'TDE' ? 5 : 10;
-    const currentParticipants = countryReg ? countryReg.currentParticipants : 0;
-    const availableSlots = maxParticipants - currentParticipants;
-    return {
-      available: currentParticipants < maxParticipants,
-      totalSlots: maxParticipants,
-      currentParticipants: currentParticipants,
-      remainingSlots: availableSlots,
-      isFull: currentParticipants >= maxParticipants
-    };
+  static async getAvailability(moduleNumber, programType) {
+    try {
+      // Get the class settings for the program
+      const classSettings = await ClassSettings.findOne({
+        moduleNumber: parseInt(moduleNumber),
+        programType: programType
+      });
+
+      if (!classSettings) {
+        throw new Error('Class settings not found');
+      }
+
+      // Count only confirmed (paid) participants
+      const confirmedParticipants = await User.countDocuments({
+        moduleNumber: parseInt(moduleNumber),
+        programType: programType,
+        paymentStatus: 'completed'
+      });
+
+      const maxParticipants = classSettings.maxParticipants;
+      const availableSlots = maxParticipants - confirmedParticipants;
+
+      return {
+        available: confirmedParticipants < maxParticipants,
+        totalSlots: maxParticipants,
+        currentParticipants: confirmedParticipants,
+        remainingSlots: availableSlots,
+        isFull: confirmedParticipants >= maxParticipants
+      };
+    } catch (error) {
+      console.error('Error checking availability:', error);
+      throw error;
+    }
   }
 
   static async checkAvailability(req, res) {
     try {
-      const { country, moduleNumber, programType } = req.query;
-      const result = await RegisterController.getAvailability(country, moduleNumber, programType);
+      const { moduleNumber, programType } = req.query;
+      const result = await RegisterController.getAvailability(moduleNumber, programType);
       res.json(result);
     } catch (error) {
       console.error('Availability check error:', error);
@@ -93,18 +111,20 @@ class RegisterController {
       if (errors.length > 0) {
         return res.render('pages/register', { errors, success: false });
       }
+
       // Use the shared availability logic
-      const availability = await RegisterController.getAvailability(country, moduleNumber, programType);
+      const availability = await RegisterController.getAvailability(moduleNumber, programType);
       if (!availability.available) {
         return res.render('pages/register', {
-          errors: ['Maximum participants reached for this program in your country'],
+          errors: ['Maximum participants reached for this program'],
           success: false
         });
       }
+
       // Create new user
       const user = new User({
         moduleNumber: parseInt(moduleNumber),
-        programType: moduleNumber === '1' ? programType : undefined,
+        programType: programType,
         firstName,
         lastName,
         email: email.toLowerCase(),
@@ -114,25 +134,10 @@ class RegisterController {
         address,
         country
       });
+
       // Save to database
       const savedUser = await user.save();
-      // Update country registration count
-      await CountryRegistration.findOneAndUpdate(
-        {
-          country: country,
-          moduleNumber: parseInt(moduleNumber),
-          programType: moduleNumber === '1' ? programType : 'PC'
-        },
-        {
-          $inc: { currentParticipants: 1 },
-          $setOnInsert: {
-            country: country,
-            moduleNumber: parseInt(moduleNumber),
-            programType: moduleNumber === '1' ? programType : 'PC'
-          }
-        },
-        { upsert: true, new: true }
-      );
+
       // Generate payment link and render success page
       try {
         const paymentLinks = await generatePaymentLinks(user);
@@ -159,7 +164,6 @@ class RegisterController {
       });
     }
   }
-
 }
 
 module.exports = RegisterController;

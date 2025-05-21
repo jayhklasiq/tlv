@@ -3,6 +3,7 @@ const VerificationCode = require('../models/VerificationCode');
 const CountryRegistration = require('../models/CountryRegistration');
 const { sendVerificationCode } = require('../services/emailService');
 const { generatePaymentLinks } = require('../config/payment');
+const ClassSettings = require('../models/ClassSettings');
 
 
 
@@ -266,9 +267,56 @@ class ProfileController {
     }
   }
 
+  static async showPaymentError(req, res) {
+    try {
+      const error = req.query.error || 'An error occurred during payment processing.';
+      const user = req.session.user || null;
+
+      res.render('pages/payment-error', {
+        title: 'Payment Error',
+        pageTitle: 'Payment Error',
+        error,
+        user,
+        errors: []
+      });
+    } catch (error) {
+      console.error('Error rendering payment error page:', error);
+      // Fallback to a basic error page if something goes wrong
+      res.render('pages/payment-error', {
+        title: 'Payment Error',
+        pageTitle: 'Payment Error',
+        error: 'An unexpected error occurred. Please try again later.',
+        user: null,
+        errors: []
+      });
+    }
+  }
+
   static async setUpPayment(req, res) {
     try {
       const user = req.session.user;
+
+      // Check if the program is already full before generating payment links
+      const classSettings = await ClassSettings.findOne({
+        moduleNumber: user.moduleNumber,
+        programType: user.programType
+      });
+
+      if (!classSettings) {
+        return res.redirect('/profile/payment-error?error=Class settings not found');
+      }
+
+      // Count current confirmed participants
+      const confirmedParticipants = await User.countDocuments({
+        moduleNumber: user.moduleNumber,
+        programType: user.programType,
+        paymentStatus: 'completed'
+      });
+
+      // If the program is already full, redirect to error page
+      if (confirmedParticipants >= classSettings.maxParticipants) {
+        return res.redirect('/profile/payment-error?error=This program is currently full. Please contact support for assistance.');
+      }
 
       // Generate payment links
       const paymentLinks = await generatePaymentLinks(user);
@@ -280,22 +328,20 @@ class ProfileController {
         title: `Module ${user.moduleNumber} Registration Successful`,
         pageTitle: 'Registration Successful',
         user,
-        paymentLinks, // Now includes Stripe and PayPal links
-        moduleTemplate: `module${user.moduleNumber}`, // Fixed: use user.moduleNumber instead of moduleNumber
+        paymentLinks,
+        moduleTemplate: `module${user.moduleNumber}`,
         errors: []
       });
     } catch (paymentError) {
       console.error('Payment link generation error:', paymentError);
 
-      // Fixed: declare user variable at the beginning so it's accessible in catch block
-      const user = req.session.user;
-
       // Delete the user if payment link generation fails
-      if (user && user._id) {
-        await User.findByIdAndDelete(user._id);
+      if (req.session.user && req.session.user._id) {
+        await User.findByIdAndDelete(req.session.user._id);
       }
 
-      throw new Error('Payment link generation failed');
+      // Redirect to error page with the specific error message
+      return res.redirect(`/profile/payment-error?error=${encodeURIComponent(paymentError.message || 'Failed to set up payment. Please try again.')}`);
     }
   }
 

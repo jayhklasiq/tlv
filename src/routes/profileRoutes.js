@@ -11,6 +11,7 @@ router.post('/verify-code', ProfileController.verifyCode);
 router.get('/logout', ProfileController.logout);
 router.get('/check-availability', RegisterController.checkAvailability);
 router.get('/pay', ProfileController.setUpPayment);
+router.get('/payment-error', ProfileController.showPaymentError); // Add dedicated payment error route
 
 // Profile update route - protected by authentication
 router.post('/update', auth, ProfileController.update);
