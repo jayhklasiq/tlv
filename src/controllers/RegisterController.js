@@ -1,31 +1,32 @@
 const User = require('../models/User');
-const { generatePaymentLinks, getUserFromSession } = require('../config/payment');
+const { generatePaymentLinks } = require('../config/payment');
 const CountryRegistration = require('../models/CountryRegistration');
-// const { setUpPayment } = require('./ProfileController');
 
 class RegisterController {
-  // Add this new method
+  // Reusable function for availability logic
+  static async getAvailability(country, moduleNumber, programType) {
+    const countryReg = await CountryRegistration.findOne({
+      country: country,
+      moduleNumber: parseInt(moduleNumber),
+      programType: moduleNumber === '1' ? programType : 'PC'
+    });
+    const maxParticipants = moduleNumber === '1' && programType === 'TDE' ? 5 : 10;
+    const currentParticipants = countryReg ? countryReg.currentParticipants : 0;
+    const availableSlots = maxParticipants - currentParticipants;
+    return {
+      available: currentParticipants < maxParticipants,
+      totalSlots: maxParticipants,
+      currentParticipants: currentParticipants,
+      remainingSlots: availableSlots,
+      isFull: currentParticipants >= maxParticipants
+    };
+  }
+
   static async checkAvailability(req, res) {
     try {
       const { country, moduleNumber, programType } = req.query;
-
-      const countryReg = await CountryRegistration.findOne({
-        country: country,
-        moduleNumber: parseInt(moduleNumber),
-        programType: moduleNumber === '1' ? programType : 'PC'
-      });
-
-      const maxParticipants = moduleNumber === '1' && programType === 'TDE' ? 5 : 10;
-      const currentParticipants = countryReg ? countryReg.currentParticipants : 0;
-      const availableSlots = maxParticipants - currentParticipants;
-
-      res.json({
-        available: currentParticipants < maxParticipants,
-        totalSlots: maxParticipants,
-        currentParticipants: currentParticipants,
-        remainingSlots: availableSlots,
-        isFull: currentParticipants >= maxParticipants
-      });
+      const result = await RegisterController.getAvailability(country, moduleNumber, programType);
+      res.json(result);
     } catch (error) {
       console.error('Availability check error:', error);
       res.status(500).json({
@@ -59,13 +60,10 @@ class RegisterController {
 
       // Basic validation
       const errors = [];
-      // const moduleTemplate = '';
-
       // Validate moduleNumber and programType combination
       if (parseInt(moduleNumber) === 1 && !programType) {
         errors.push('Program Type is required for Module 1');
       }
-
       // Validate role is in allowed list
       const allowedRoles = [
         'Board Chairperson',
@@ -84,37 +82,25 @@ class RegisterController {
         'President',
         'Vice President'
       ];
-
       if (!allowedRoles.includes(role)) {
         errors.push('Invalid role selected');
       }
-
       // Check for existing user
       const existingUser = await User.findOne({ email: email.toLowerCase() });
       if (existingUser) {
         errors.push('Email already registered');
       }
-
       if (errors.length > 0) {
         return res.render('pages/register', { errors, success: false });
       }
-
-      // Check country participant limits
-      const countryReg = await CountryRegistration.findOne({
-        country: country,
-        moduleNumber: parseInt(moduleNumber),
-        programType: moduleNumber === '1' ? programType : 'PC'
-      });
-
-      const maxParticipants = moduleNumber === '1' && programType === 'TDE' ? 5 : 10;
-
-      if (countryReg && countryReg.currentParticipants >= maxParticipants) {
+      // Use the shared availability logic
+      const availability = await RegisterController.getAvailability(country, moduleNumber, programType);
+      if (!availability.available) {
         return res.render('pages/register', {
           errors: ['Maximum participants reached for this program in your country'],
           success: false
         });
       }
-
       // Create new user
       const user = new User({
         moduleNumber: parseInt(moduleNumber),
@@ -128,10 +114,8 @@ class RegisterController {
         address,
         country
       });
-
       // Save to database
       const savedUser = await user.save();
-
       // Update country registration count
       await CountryRegistration.findOneAndUpdate(
         {
@@ -149,30 +133,24 @@ class RegisterController {
         },
         { upsert: true, new: true }
       );
-
       // Generate payment link and render success page
       try {
-        // Generate payment links
         const paymentLinks = await generatePaymentLinks(user);
-
-        // Render success view with payment links
         res.render('pages/registration-success', {
           success: true,
           title: `Module ${moduleNumber} Registration Successful`,
           pageTitle: 'Registration Successful',
           user: savedUser,
           moduleNumber: savedUser.moduleNumber,
-          paymentLinks, // Now includes Stripe and PayPal links
+          paymentLinks,
           moduleTemplate: `module${moduleNumber}`,
           errors: []
         });
       } catch (paymentError) {
         console.error('Payment link generation error:', paymentError);
-        // Delete the user if payment link generation fails
         await User.findByIdAndDelete(user._id);
         throw new Error('Payment link generation failed');
       }
-
     } catch (error) {
       console.error('Registration error:', error);
       res.render('pages/register', {
