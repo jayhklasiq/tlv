@@ -126,10 +126,11 @@ const moduleRoutes = require('./src/routes/moduleRoutes');
 const registerRoutes = require('./src/routes/registerRoutes');
 const profileRoutes = require('./src/routes/profileRoutes');
 const paypalRoutes = require('./src/routes/paypalRoutes');
+const waitlistRoutes = require('./src/routes/waitlistRoutes');
+const errorRoutes = require('./src/routes/errorRoutes');
 
 // Import the admin routes
 const adminRoutes = require('./src/routes/adminRoutes');
-
 
 app.use('/', homeRoutes);
 app.use('/about', aboutRoutes);
@@ -138,6 +139,7 @@ app.use('/program', moduleRoutes);
 app.use('/register', registerRoutes);
 app.use('/profile', profileRoutes);
 app.use('/api', paypalRoutes);
+app.use('/waitlist', waitlistRoutes);
 
 // Add the admin routes
 app.use('/admin', adminRoutes);
@@ -161,11 +163,8 @@ const startServer = async () => {
 // Start the server
 startServer();
 
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
+// Error handling middleware - must be after all routes
+app.use(errorRoutes);
 
 // Define a port to listen on
 const PORT = process.env.PORT || '3500';

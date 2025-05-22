@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const { generatePaymentLinks } = require('../config/payment');
-const CountryRegistration = require('../models/CountryRegistration');
+const WaitlistController = require('../controllers/WaitlistController');
 const ClassSettings = require('../models/ClassSettings');
 
 class RegisterController {
@@ -54,11 +54,12 @@ class RegisterController {
   }
 
   static async showForm(req, res) {
-    res.render('pages/register', {
-      title: 'Register for Module 1',
-      pageTitle: 'Register',
-      errors: []
-    });
+    // res.render('pages/register', {
+    //   title: 'Register for Module 1',
+    //   pageTitle: 'Register',
+    //   errors: []
+    // });
+    return WaitlistController.showForm(req, res);
   };
 
   static async submit(req, res) {
@@ -115,10 +116,8 @@ class RegisterController {
       // Use the shared availability logic
       const availability = await RegisterController.getAvailability(moduleNumber, programType);
       if (!availability.available) {
-        return res.render('pages/register', {
-          errors: ['Maximum participants reached for this program'],
-          success: false
-        });
+        // Redirect to waitlist instead of showing error
+        return res.redirect(`/waitlist?moduleNumber=${moduleNumber}${programType ? `&programType=${programType}` : ''}`);
       }
 
       // Create new user

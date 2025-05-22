@@ -34,14 +34,6 @@
                     class="form-radio" onchange="toggleProgramType()">
                   <span class="text-white">Module 1</span>
                 </label>
-                <!-- <label class="flex items-center space-x-3 p-4 border rounded cursor-pointer hover:border-white">
-                <input type="radio" name="moduleNumber" value="2" required disabled class="form-radio">
-                <span class="text-white">Module 2</span>
-              </label>
-              <label class="flex items-center space-x-3 p-4 border rounded cursor-pointer hover:border-white">
-                <input type="radio" name="moduleNumber" value="3" required disabled class="form-radio">
-                <span class="text-white">Module 3</span>
-              </label> -->
               </div>
             </div>
             <div id="programTypeSection" class="mb-6 hidden">
@@ -579,7 +571,7 @@
               const phone = document.getElementById('phone');
               const countryCode = document.getElementById('countryCode');
 
-              if (phone.value.startswith(countryCode)){
+              if (phone.value.startswith(countryCode)) {
                 phone = phone.slice(countryCode.length);
               }
 
