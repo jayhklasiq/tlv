@@ -82,6 +82,7 @@ const handleSuccessfulPayment = async (session) => {
     const username = user.firstName;
     const programType = user.programType;
 
+    // Send registration success email
     await registerSuccessMessage(email, username, programType);
 
     // Update user information
