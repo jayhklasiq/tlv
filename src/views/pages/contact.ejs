@@ -19,6 +19,9 @@
           <% } %>
             <p class="text-xl mb-6 text-gray-400">How Can We Help You Today?</p>
             <form action="/contact/submit" method="POST" class="space-y-6">
+              <div style="display: none;">
+                <input type="text" id="phone" name="phone" autocomplete="off">
+              </div>
               <div>
                 <label for="name" class="block text-gray-400 mb-2">Name</label>
                 <input type="text" id="name" name="name" required

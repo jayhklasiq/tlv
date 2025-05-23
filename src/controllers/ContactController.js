@@ -12,10 +12,16 @@ class ContactController {
   }
 
   static async submit(req, res) {
-    const { name, email, message } = req.body;
+    const { name, email, message, phone } = req.body;
     const errors = [];
 
     try {
+      // Honeypot validation
+      if (phone && phone.trim() !== '') {
+        // Silently reject the submission without revealing it was a honeypot
+        return res.redirect('/contact?success=true');
+      }
+
       // Validation
       if (!name || !email || !message) {
         errors.push('All fields are required.');
