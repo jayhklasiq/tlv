@@ -1,4 +1,3 @@
-const Contact = require('../models/Contact');
 const { sendContactFormEmail, sendContactConfirmation } = require('../services/emailService');
 
 class ContactController {
