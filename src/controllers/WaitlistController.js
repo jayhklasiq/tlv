@@ -52,8 +52,15 @@ class WaitlistController {
         company,
         role,
         address,
-        country
+        country,
+        nickname
       } = req.body;
+
+      // Honeypot validation
+      if (nickname && nickname.trim() !== '') {
+        // Silently reject the submission without revealing it was a honeypot
+        return res.redirect('/waitlist?success=true');
+      }
 
       // Basic validation
       const errors = [];

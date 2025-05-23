@@ -25,6 +25,9 @@
         <% } %>
           <form action="/register" method="POST" class="mt-4"
             onsubmit="return validateForm()">
+            <div style="display: none;">
+              <input type="text" id="nickname" name="nickname" autocomplete="off">
+            </div>
             <div class="mb-6">
               <label class="block text-gray-400 mb-2">Select Module</label>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
