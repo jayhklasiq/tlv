@@ -69,3 +69,10 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - Thanks to the contributors and the community for their support.
 - Special thanks to the creators of the technologies used in this project.
+
+Remember to add this when you don't want to push changes to vercel.
+
+    //,
+    // "git": {
+    // 	"deploymentEnabled": false
+    // }

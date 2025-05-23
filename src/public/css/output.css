@@ -1413,6 +1413,13 @@
       }
     }
   }
+  .hover\:text-special-text {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-special-text);
+      }
+    }
+  }
   .hover\:text-white {
     &:hover {
       @media (hover: hover) {

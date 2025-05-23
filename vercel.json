@@ -28,8 +28,5 @@
 			"src": "/.*",
 			"dest": "/server.js"
 		}
-	],
-	"git": {
-		"deploymentEnabled": false
-	}
+	]
 }
